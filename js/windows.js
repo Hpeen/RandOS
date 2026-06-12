@@ -5,14 +5,15 @@ let offsetSeed = 0;
 // openWindow({ title, glyph, appName, contentEl }) -> windowEl
 function openWindow({ title, glyph, appName, contentEl }) {
   const desktop = document.getElementById('desktop');
+  if (desktop === null) return null;
   const win = document.createElement('div');
   win.className = 'window';
 
   // Cascade new windows so they don't stack exactly.
-  const base = 80 + (offsetSeed % 6) * 28;
+  const slot = offsetSeed % 6;
   offsetSeed++;
-  win.style.left = base + 'px';
-  win.style.top = (70 + (offsetSeed % 6) * 24) + 'px';
+  win.style.left = (80 + slot * 28) + 'px';
+  win.style.top  = (70 + slot * 24) + 'px';
 
   // Per-window random skin.
   const skin = rollSkin(appName);
@@ -48,13 +49,13 @@ function openWindow({ title, glyph, appName, contentEl }) {
   win.addEventListener('mousedown', () => focusWindow(win));
 
   // Close removes window + taskbar entry.
+  const removeDrag = makeDraggable(win, bar);
   close.addEventListener('click', (e) => {
     e.stopPropagation();
+    removeDrag();
     win.remove();
     entry.remove();
   });
-
-  makeDraggable(win, bar);
   return win;
 }
 
@@ -64,16 +65,23 @@ function focusWindow(win) {
 
 function makeDraggable(win, handle) {
   let dragging = false, startX = 0, startY = 0, originX = 0, originY = 0;
-  handle.addEventListener('mousedown', (e) => {
+  function onDown(e) {
     dragging = true;
     startX = e.clientX; startY = e.clientY;
     originX = win.offsetLeft; originY = win.offsetTop;
     e.preventDefault();
-  });
-  window.addEventListener('mousemove', (e) => {
+  }
+  function onMove(e) {
     if (!dragging) return;
     win.style.left = (originX + e.clientX - startX) + 'px';
     win.style.top  = (originY + e.clientY - startY) + 'px';
-  });
-  window.addEventListener('mouseup', () => { dragging = false; });
+  }
+  function onUp() { dragging = false; }
+  handle.addEventListener('mousedown', onDown);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  return function cleanup() {
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+  };
 }
