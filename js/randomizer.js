@@ -13,33 +13,35 @@
 
 const POOLS = {
   // ── Palettes ──────────────────────────────────────────────────────────
-  // Each: { name, bg, surface, text, accent, accent2, mono }
+  // Each: { name, bg, surface, text, accent, accent2, accentText, accent2Text, mono }
   // Rule of the pool: `text` must hold strong contrast on BOTH `bg` and
-  // `surface`. Accents are decorative — never the only thing carrying text.
+  // `surface`. Text that sits ON an accent surface (title bars, operator
+  // keys) uses `accentText` / `accent2Text`, each hand-verified to clear
+  // WCAG AA (>= 4.5:1) against its accent — see tests/randomizer.test.js.
   palette: [
     // — vivid darks —
-    { name: 'Midnight Arcade',  bg: '#12101f', surface: '#1d1933', text: '#f2effc', accent: '#ff4d9d', accent2: '#28e0c8', mono: false },
-    { name: 'Sunset Boulevard', bg: '#2b1430', surface: '#3d1d45', text: '#ffe9e0', accent: '#ff7a45', accent2: '#ffc53d', mono: false },
-    { name: 'Deep Sea',         bg: '#04222e', surface: '#0a3445', text: '#dff6ff', accent: '#2fd4ff', accent2: '#ffd166', mono: false },
-    { name: 'Cyber Lime',       bg: '#0f140f', surface: '#1a241a', text: '#eaffe8', accent: '#9aff3c', accent2: '#ff5ce1', mono: false },
-    { name: 'Royal Plum',       bg: '#221033', surface: '#331b4b', text: '#f4eaff', accent: '#c084fc', accent2: '#fbbf24', mono: false },
-    { name: 'Magma',            bg: '#1c0b0b', surface: '#2c1212', text: '#ffeae2', accent: '#ff5234', accent2: '#ffb02e', mono: false },
+    { name: 'Midnight Arcade',  bg: '#12101f', surface: '#1d1933', text: '#f2effc', accent: '#ff4d9d', accent2: '#28e0c8', accentText: '#12101f', accent2Text: '#12101f', mono: false },
+    { name: 'Sunset Boulevard', bg: '#2b1430', surface: '#3d1d45', text: '#ffe9e0', accent: '#ff7a45', accent2: '#ffc53d', accentText: '#2b1430', accent2Text: '#2b1430', mono: false },
+    { name: 'Deep Sea',         bg: '#04222e', surface: '#0a3445', text: '#dff6ff', accent: '#2fd4ff', accent2: '#ffd166', accentText: '#04222e', accent2Text: '#04222e', mono: false },
+    { name: 'Cyber Lime',       bg: '#0f140f', surface: '#1a241a', text: '#eaffe8', accent: '#9aff3c', accent2: '#ff5ce1', accentText: '#0f140f', accent2Text: '#0f140f', mono: false },
+    { name: 'Royal Plum',       bg: '#221033', surface: '#331b4b', text: '#f4eaff', accent: '#c084fc', accent2: '#fbbf24', accentText: '#221033', accent2Text: '#221033', mono: false },
+    { name: 'Magma',            bg: '#1c0b0b', surface: '#2c1212', text: '#ffeae2', accent: '#ff5234', accent2: '#ffb02e', accentText: '#1c0b0b', accent2Text: '#1c0b0b', mono: false },
 
     // — vivid lights —
-    { name: 'Peach Soda',       bg: '#fff1e6', surface: '#ffffff', text: '#4a2c2a', accent: '#ff6b6b', accent2: '#12b5a5', mono: false },
-    { name: 'Mint Cream',       bg: '#e8f7ef', surface: '#ffffff', text: '#14443b', accent: '#0fa97e', accent2: '#ff8552', mono: false },
-    { name: 'Powder Day',       bg: '#eaf2fb', surface: '#ffffff', text: '#1f3a5f', accent: '#3b82f6', accent2: '#ec6aa9', mono: false },
-    { name: 'Lemon Press',      bg: '#fdf3cf', surface: '#fffdf2', text: '#4d3f0e', accent: '#d99a06', accent2: '#6d28d9', mono: false },
-    { name: 'Bubblegum Pop',    bg: '#ffe4f1', surface: '#fff7fb', text: '#5d1f43', accent: '#e0408a', accent2: '#7c5cd6', mono: false },
-    { name: 'Terracotta',       bg: '#f3e9dc', surface: '#fbf5ec', text: '#43302b', accent: '#c1542e', accent2: '#5f7c61', mono: false },
+    { name: 'Peach Soda',       bg: '#fff1e6', surface: '#ffffff', text: '#4a2c2a', accent: '#ff6b6b', accent2: '#12b5a5', accentText: '#000000', accent2Text: '#000000', mono: false },
+    { name: 'Mint Cream',       bg: '#e8f7ef', surface: '#ffffff', text: '#14443b', accent: '#0fa97e', accent2: '#ff8552', accentText: '#000000', accent2Text: '#000000', mono: false },
+    { name: 'Powder Day',       bg: '#eaf2fb', surface: '#ffffff', text: '#1f3a5f', accent: '#3b82f6', accent2: '#ec6aa9', accentText: '#000000', accent2Text: '#000000', mono: false },
+    { name: 'Lemon Press',      bg: '#fdf3cf', surface: '#fffdf2', text: '#4d3f0e', accent: '#d99a06', accent2: '#6d28d9', accentText: '#000000', accent2Text: '#ffffff', mono: false },
+    { name: 'Bubblegum Pop',    bg: '#ffe4f1', surface: '#fff7fb', text: '#5d1f43', accent: '#e0408a', accent2: '#7c5cd6', accentText: '#000000', accent2Text: '#ffffff', mono: false },
+    { name: 'Terracotta',       bg: '#f3e9dc', surface: '#fbf5ec', text: '#43302b', accent: '#c1542e', accent2: '#5f7c61', accentText: '#ffffff', accent2Text: '#ffffff', mono: false },
 
     // — monochrome / single-hue —
-    { name: 'Noir',             bg: '#0d0d0d', surface: '#1b1b1b', text: '#f5f5f5', accent: '#ffffff', accent2: '#8c8c8c', mono: true  },
-    { name: 'Paper',            bg: '#f4f1ea', surface: '#fffefa', text: '#2b2926', accent: '#1a1a1a', accent2: '#8a857c', mono: true  },
-    { name: 'Terminal Green',   bg: '#031108', surface: '#07210f', text: '#c8ffd4', accent: '#33ff77', accent2: '#11a04d', mono: true  },
-    { name: 'Graphite',         bg: '#23272c', surface: '#2e343b', text: '#e8ebee', accent: '#aeb7c0', accent2: '#6b7681', mono: true  },
-    { name: 'Amber CRT',        bg: '#160d02', surface: '#241604', text: '#ffd9a0', accent: '#ffb347', accent2: '#b3741f', mono: true  },
-    { name: 'Blueprint',        bg: '#0a2540', surface: '#103258', text: '#dbeafe', accent: '#7cc4ff', accent2: '#4a86b8', mono: true  }
+    { name: 'Noir',             bg: '#0d0d0d', surface: '#1b1b1b', text: '#f5f5f5', accent: '#ffffff', accent2: '#8c8c8c', accentText: '#0d0d0d', accent2Text: '#0d0d0d', mono: true  },
+    { name: 'Paper',            bg: '#f4f1ea', surface: '#fffefa', text: '#2b2926', accent: '#1a1a1a', accent2: '#8a857c', accentText: '#f4f1ea', accent2Text: '#000000', mono: true  },
+    { name: 'Terminal Green',   bg: '#031108', surface: '#07210f', text: '#c8ffd4', accent: '#33ff77', accent2: '#11a04d', accentText: '#031108', accent2Text: '#031108', mono: true  },
+    { name: 'Graphite',         bg: '#23272c', surface: '#2e343b', text: '#e8ebee', accent: '#aeb7c0', accent2: '#6b7681', accentText: '#23272c', accent2Text: '#ffffff', mono: true  },
+    { name: 'Amber CRT',        bg: '#160d02', surface: '#241604', text: '#ffd9a0', accent: '#ffb347', accent2: '#b3741f', accentText: '#160d02', accent2Text: '#160d02', mono: true  },
+    { name: 'Blueprint',        bg: '#0a2540', surface: '#103258', text: '#dbeafe', accent: '#7cc4ff', accent2: '#4a86b8', accentText: '#0a2540', accent2Text: '#000000', mono: true  }
   ],
 
   // ── Font pairings ─────────────────────────────────────────────────────
@@ -134,6 +136,8 @@ function applySkin(el, skin) {
   el.style.setProperty('--rand-text',      skin.palette.text);
   el.style.setProperty('--rand-accent',    skin.palette.accent);
   el.style.setProperty('--rand-accent-2',  skin.palette.accent2);
+  el.style.setProperty('--rand-accent-text',   skin.palette.accentText);
+  el.style.setProperty('--rand-accent-2-text', skin.palette.accent2Text);
   el.style.setProperty('--rand-font-head', skin.font.head);
   el.style.setProperty('--rand-font-body', skin.font.body);
   el.style.setProperty('--rand-radius',    skin.radius);

@@ -17,3 +17,7 @@ test('invalid input returns Error string, never throws', () => {
 test('divide by zero returns Error', () => {
   assert.strictEqual(evalCalc('5/0'), 'Error');
 });
+test('trailing dot is an error', () => {
+  assert.strictEqual(evalCalc('5.'), 'Error');
+  assert.strictEqual(evalCalc('5.+3'), 'Error');
+});

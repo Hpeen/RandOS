@@ -39,12 +39,12 @@ body {
 .window-title {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 10px; cursor: move; user-select: none;
-  background: var(--rand-accent); color: #fff;
+  background: var(--rand-accent); color: var(--rand-accent-text, #fff);
   font-family: var(--rand-font-head);
 }
 .window-title .title-text { flex: 1; font-size: 14px; }
 .window-close {
-  border: none; background: rgba(0,0,0,0.25); color: #fff;
+  border: none; background: rgba(0,0,0,0.25); color: var(--rand-accent-text, #fff);
   width: 22px; height: 22px; border-radius: 6px; cursor: pointer;
 }
 .window-body { padding: 14px; }
@@ -111,17 +111,17 @@ body {
   outline-offset: 2px;
 }
 
-/* Operators sit on the accent; --rand-bg text is high-contrast by
-   construction (every palette's accent is chosen to pop against its bg). */
+/* Operators sit on the accent; --rand-accent-text is contrast-safe by
+   construction (every palette's accentText clears WCAG AA on its accent). */
 .calc-key-op {
   background: var(--rand-accent);
-  color: var(--rand-bg);
+  color: var(--rand-accent-text);
   border-color: transparent;
   font-weight: 700;
 }
 .calc-key-eq {
   background: var(--rand-accent-2);
-  color: var(--rand-bg);
+  color: var(--rand-accent-2-text);
   border-color: transparent;
   font-weight: 700;
 }

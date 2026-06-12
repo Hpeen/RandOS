@@ -31,8 +31,9 @@ function calcTokenize(expr) {
         j++;
       }
       const raw = expr.slice(i, j);
-      // Reject '2..3', a lone '.', a sign with no digits, etc.
-      if (dots > 1 || !/[0-9]/.test(raw)) return null;
+      // Reject '2..3', a lone '.', a sign with no digits, and a trailing
+      // dot like '5.' (leading '.5' stays fine — only TRAILING dot errors).
+      if (dots > 1 || !/[0-9]/.test(raw) || raw.endsWith('.')) return null;
       const num = Number(raw);
       if (!Number.isFinite(num)) return null;
       tokens.push(num);

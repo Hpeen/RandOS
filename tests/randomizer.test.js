@@ -26,6 +26,24 @@ test('layout respects per-app variants', () => {
   assert.ok(POOLS.layout.calculator.includes(skin.layout));
 });
 
+// WCAG 2.1 relative luminance + contrast ratio helpers.
+function luminance(hex) {
+  const c = hex.replace('#','');
+  const rgb = [0,2,4].map(i => parseInt(c.substr(i,2),16)/255).map(v =>
+    v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4));
+  return 0.2126*rgb[0] + 0.7152*rgb[1] + 0.0722*rgb[2];
+}
+function contrast(a, b) {
+  const L1 = luminance(a), L2 = luminance(b);
+  return (Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05);
+}
+test('every palette accentText/accent2Text clears WCAG AA (4.5:1)', () => {
+  for (const p of POOLS.palette) {
+    assert.ok(contrast(p.accentText, p.accent) >= 4.5, `${p.name} accentText only ${contrast(p.accentText,p.accent).toFixed(2)}:1`);
+    assert.ok(contrast(p.accent2Text, p.accent2) >= 4.5, `${p.name} accent2Text only ${contrast(p.accent2Text,p.accent2).toFixed(2)}:1`);
+  }
+});
+
 test('applySkin writes all scoped CSS vars and dataset attrs', () => {
   const props = {};
   const fakeEl = { style: { setProperty: (k, v) => { props[k] = v; } }, dataset: {} };
