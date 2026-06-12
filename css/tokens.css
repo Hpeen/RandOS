@@ -1,0 +1,13 @@
+/* tokens.css — variables the randomizer overrides. Safe defaults live here. */
+:root {
+  --rand-bg: #1e1e2e;
+  --rand-surface: #2a2a3c;
+  --rand-text: #e6e6f0;
+  --rand-accent: #8b5cf6;
+  --rand-accent-2: #ec4899;
+  --rand-font-head: system-ui, sans-serif;
+  --rand-font-body: system-ui, sans-serif;
+  --rand-radius: 10px;
+  --rand-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  --wall-bg: linear-gradient(135deg, #1e1e2e, #313150);
+}
