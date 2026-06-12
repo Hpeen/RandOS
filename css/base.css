@@ -48,3 +48,173 @@ body {
   width: 22px; height: 22px; border-radius: 6px; cursor: pointer;
 }
 .window-body { padding: 14px; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Calculator app
+   Skinned entirely by the window's scoped --rand-* custom properties.
+   Each key carries data-key, mapped here to a named grid-area so the three
+   layout variants (grid | stacked | compact) can rearrange the keypad
+   without any JS changes.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.calc {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 268px;
+  font-family: var(--rand-font-body);
+}
+
+/* ── Display ── */
+.calc-display {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  min-height: 58px;
+  padding: 10px 14px;
+  background: var(--rand-bg);
+  color: var(--rand-text);
+  font-family: var(--rand-font-head);
+  font-size: 26px;
+  line-height: 1.2;
+  text-align: right;
+  word-break: break-all;
+  overflow: hidden;
+  border-radius: calc(var(--rand-radius) * 0.55);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+/* ── Keys ── */
+.calc-key {
+  min-height: 52px;
+  border: 1px solid transparent;
+  border-radius: calc(var(--rand-radius) * 0.5);
+  font-family: inherit;
+  font-size: 17px;
+  cursor: pointer;
+  color: var(--rand-text);
+  background: var(--rand-surface);
+  background: color-mix(in srgb, var(--rand-accent) 14%, var(--rand-surface));
+  border-color: color-mix(in srgb, var(--rand-accent) 30%, transparent);
+  transition: filter 120ms ease, transform 120ms ease;
+}
+.calc-key:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.calc-key:active {
+  filter: brightness(0.94);
+  transform: translateY(0) scale(0.97);
+}
+.calc-key:focus-visible {
+  outline: 2px solid var(--rand-accent-2);
+  outline-offset: 2px;
+}
+
+/* Operators sit on the accent; --rand-bg text is high-contrast by
+   construction (every palette's accent is chosen to pop against its bg). */
+.calc-key-op {
+  background: var(--rand-accent);
+  color: var(--rand-bg);
+  border-color: transparent;
+  font-weight: 700;
+}
+.calc-key-eq {
+  background: var(--rand-accent-2);
+  color: var(--rand-bg);
+  border-color: transparent;
+  font-weight: 700;
+}
+.calc-key-clear {
+  background: transparent;
+  border: 1.5px solid var(--rand-accent);
+  color: var(--rand-text);
+  font-weight: 700;
+}
+
+/* ── Keypad: base = classic desk calculator (also the "grid" layout) ──
+   Wide C across the top, operator column on the right, tall equals. */
+.calc-pad {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-areas:
+    "clr clr div mul"
+    "k7  k8  k9  sub"
+    "k4  k5  k6  add"
+    "k1  k2  k3  eq"
+    "k0  k0  dot eq";
+}
+
+/* data-key -> grid-area mapping (shared by all layouts) */
+.calc-key[data-key="0"] { grid-area: k0; }
+.calc-key[data-key="1"] { grid-area: k1; }
+.calc-key[data-key="2"] { grid-area: k2; }
+.calc-key[data-key="3"] { grid-area: k3; }
+.calc-key[data-key="4"] { grid-area: k4; }
+.calc-key[data-key="5"] { grid-area: k5; }
+.calc-key[data-key="6"] { grid-area: k6; }
+.calc-key[data-key="7"] { grid-area: k7; }
+.calc-key[data-key="8"] { grid-area: k8; }
+.calc-key[data-key="9"] { grid-area: k9; }
+.calc-key[data-key="."] { grid-area: dot; }
+.calc-key[data-key="+"] { grid-area: add; }
+.calc-key[data-key="-"] { grid-area: sub; }
+.calc-key[data-key="*"] { grid-area: mul; }
+.calc-key[data-key="/"] { grid-area: div; }
+.calc-key[data-key="="] { grid-area: eq; }
+.calc-key[data-key="C"] { grid-area: clr; }
+
+/* ── Layout: stacked — oversized keys, operator rail on the right,
+   and a full-width equals bar anchoring the bottom. ── */
+.window[data-layout="stacked"] .calc {
+  width: 312px;
+  gap: 12px;
+}
+.window[data-layout="stacked"] .calc-display {
+  min-height: 72px;
+  font-size: 32px;
+}
+.window[data-layout="stacked"] .calc-pad {
+  gap: 10px;
+  grid-template-areas:
+    "k7  k8  k9  div"
+    "k4  k5  k6  mul"
+    "k1  k2  k3  sub"
+    "clr k0  dot add"
+    "eq  eq  eq  eq";
+}
+.window[data-layout="stacked"] .calc-key {
+  min-height: 62px;
+  font-size: 22px;
+}
+.window[data-layout="stacked"] .calc-key-eq {
+  min-height: 54px;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em; /* visually re-center the spaced glyph */
+}
+
+/* ── Layout: compact — dense 5-column slab, small quiet keys,
+   tall + and = bracketing the lower-right corner. ── */
+.window[data-layout="compact"] .calc {
+  width: 252px;
+  gap: 6px;
+}
+.window[data-layout="compact"] .calc-display {
+  min-height: 40px;
+  padding: 6px 10px;
+  font-size: 19px;
+}
+.window[data-layout="compact"] .calc-pad {
+  gap: 5px;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-areas:
+    "k7 k8 k9  clr div"
+    "k4 k5 k6  mul sub"
+    "k1 k2 k3  add eq"
+    "k0 k0 dot add eq";
+}
+.window[data-layout="compact"] .calc-key {
+  min-height: 34px;
+  font-size: 13.5px;
+}
