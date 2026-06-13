@@ -21,6 +21,19 @@ body {
   pointer-events: none;
 }
 #icons, #taskbar { z-index: 1; }
+
+/* Shared particle / effects layer (js/particles.js). A single full-screen
+   canvas that renders bursts, confetti, and the cursor trail ABOVE windows
+   (z-index 101+) but BELOW the boot overlay (#boot is 9999). pointer-events:
+   none is load-bearing — particles must never intercept clicks or drag. */
+#fx-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9000;
+  pointer-events: none;
+}
 #icons {
   position: absolute; top: 16px; left: 16px;
   display: flex; flex-direction: column; gap: 14px;
