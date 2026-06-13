@@ -286,6 +286,21 @@
     g.setAttribute('class', 'pxi-spin'); // slow rotate ambient
   }
 
+  function drawNotepad(g, R) {
+    // A sheet with ruled lines + a pencil corner; one line glitch-blinks.
+    g.appendChild(px(2, 1, R.ink, { w: 8, h: 10, rx: 0.5 }));  // page
+    g.appendChild(px(3, 1, R.accent, { w: 1, h: 10, opacity: 0.5 })); // margin
+    const lines = [3, 5, 7, 9];
+    for (let i = 0; i < lines.length; i++) {
+      const glitch = chance(0.3);
+      g.appendChild(px(4, lines[i], glitch ? R.accent2 : R.ink2, {
+        w: glitch ? 3 + randInt(3) : 5, h: 1, cls: glitch ? 'pxi-blink2' : undefined
+      }));
+    }
+    g.appendChild(px(8, 8, R.accent2, { w: 2, h: 3 })); // pencil
+    g.appendChild(px(8, 11, R.accent, { w: 2, h: 1 }));  // tip
+  }
+
   const BUILDERS = {
     calculator: drawCalculator,
     clock: drawClock,
@@ -297,7 +312,8 @@
     soundboard: drawSoundboard,
     suggestionbox: drawSuggestionbox,
     quote: drawQuote,
-    spinner: drawSpinner
+    spinner: drawSpinner,
+    notepad: drawNotepad,
   };
 
   // Per-icon ambient motion class on the wrapper (gentle bob / sway).
@@ -312,7 +328,8 @@
     soundboard: 'pxi-bob',
     suggestionbox: '',  // the slip animates itself
     quote: 'pxi-sway',
-    spinner: ''         // rotates via inner <g> class
+    spinner: '',        // rotates via inner <g> class
+    notepad: 'pxi-bob',
   };
 
   // makePixelIcon(name, opts) -> SVG element (an animated pixel-art icon).
