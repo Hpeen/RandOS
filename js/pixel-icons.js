@@ -301,6 +301,18 @@
     g.appendChild(px(8, 11, R.accent, { w: 2, h: 1 }));  // tip
   }
 
+  function drawPaint(g, R) {
+    // A paint palette blob with dabs of color + a brush.
+    g.appendChild(px(2, 4, R.ink, { w: 7, h: 6, rx: 3, opacity: 0.85 })); // palette
+    const dabs = [[3, 5], [5, 5], [4, 7], [6, 6]];
+    const cols = [R.accent, R.accent2, R.ink2];
+    for (let i = 0; i < dabs.length; i++) {
+      if (chance(0.8)) g.appendChild(px(dabs[i][0], dabs[i][1], cols[randInt(cols.length)], { cls: chance(0.4) ? 'pxi-blink' : undefined }));
+    }
+    g.appendChild(px(8, 1, R.ink, { w: 1, h: 5 }));    // brush handle
+    g.appendChild(px(8, 6, R.accent, { w: 1, h: 2 }));  // bristles
+  }
+
   const BUILDERS = {
     calculator: drawCalculator,
     clock: drawClock,
@@ -314,6 +326,7 @@
     quote: drawQuote,
     spinner: drawSpinner,
     notepad: drawNotepad,
+    paint: drawPaint,
   };
 
   // Per-icon ambient motion class on the wrapper (gentle bob / sway).
@@ -330,6 +343,7 @@
     quote: 'pxi-sway',
     spinner: '',        // rotates via inner <g> class
     notepad: 'pxi-bob',
+    paint: 'pxi-sway',
   };
 
   // makePixelIcon(name, opts) -> SVG element (an animated pixel-art icon).
