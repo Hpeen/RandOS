@@ -1,0 +1,13 @@
+# Internal tooling / planning (not part of the shipped webOS)
+.planning/
+.claude/
+
+# Stray tilde dir from shell ~ that didn't expand
+~/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+
+# Node (only used for the test runner; no deps are committed)
+node_modules/
