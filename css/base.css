@@ -39,7 +39,7 @@ body {
   display: flex; flex-direction: column; gap: 14px;
 }
 .app-icon {
-  width: 84px; cursor: pointer; text-align: center;
+  width: 84px; cursor: var(--cursor-pointer, pointer); text-align: center;
   color: #fff; font-size: 13px; user-select: none;
   text-shadow: 0 1px 4px rgba(0,0,0,0.6);
 }
@@ -53,7 +53,7 @@ body {
 #taskbar .spacer { flex: 1; }
 .task-entry, .shuffle-btn {
   background: rgba(255,255,255,0.12); color: #fff; border: none;
-  padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  padding: 6px 12px; border-radius: 8px; cursor: var(--cursor-pointer, pointer); font-size: 13px;
 }
 .shuffle-btn {
   display: inline-flex; align-items: center; gap: 7px;
@@ -68,7 +68,7 @@ body {
 }
 .window-title {
   display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; cursor: move; user-select: none;
+  padding: 8px 10px; cursor: var(--cursor-pointer, move); user-select: none;
   background: var(--rand-accent); color: var(--rand-accent-text, #fff);
   font-family: var(--rand-font-head);
 }
@@ -76,12 +76,20 @@ body {
 .window-title-icon { flex: 0 0 auto; }
 .window-close {
   border: none; background: rgba(0,0,0,0.25); color: var(--rand-accent-text, #fff);
-  width: 22px; height: 22px; border-radius: 6px; cursor: pointer;
+  width: 22px; height: 22px; border-radius: 6px; cursor: var(--cursor-pointer, pointer);
 }
-/* Windows get an explicit randomized height (js/windows.js), so the body must
-   scroll rather than clip when an app's content is taller than the rolled box.
-   min-height: 0 lets the flex child actually shrink so overflow:auto engages. */
-.window-body { padding: 14px; overflow: auto; min-height: 0; flex: 1 1 auto; }
+/* Windows carry a fixed per-app size (js/windows.js); the body scrolls rather
+   than clips when an app's content is taller than the box. min-height: 0 lets the
+   flex child actually shrink so overflow:auto engages. Content is centered both
+   ways so an app with a fixed intrinsic width sits balanced inside its (larger)
+   window instead of hugging the top-left. */
+.window-body {
+  padding: 14px; overflow: auto; min-height: 0; flex: 1 1 auto;
+  display: flex; flex-direction: column; align-items: center;
+  /* `safe` centers content when it fits but falls back to top-alignment when an
+     app is taller than the window, so the top is never clipped/unscrollable. */
+  justify-content: safe center;
+}
 
 /* ════════════════════════════════════════════════════════════════════════
    Calculator app
@@ -125,7 +133,7 @@ body {
   border-radius: calc(var(--rand-radius) * 0.5);
   font-family: inherit;
   font-size: 17px;
-  cursor: pointer;
+  cursor: var(--cursor-pointer, pointer);
   color: var(--rand-text);
   background: var(--rand-surface);
   background: color-mix(in srgb, var(--rand-accent) 14%, var(--rand-surface));
@@ -612,7 +620,7 @@ body {
   border: none;
   border-radius: calc(var(--rand-radius) * 0.45);
   font-family: var(--rand-font-body);
-  cursor: pointer;
+  cursor: var(--cursor-pointer, pointer);
   box-shadow: 0 2px 8px color-mix(in srgb, var(--rand-accent) 40%, transparent);
   transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
 }
@@ -772,15 +780,58 @@ body {
    purely cosmetic and is calmed to instant/static under reduced-motion.
    ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── Window open: scale + fade in with a bouncy overshoot ── */
-.window.is-opening {
-  animation: winOpen 320ms cubic-bezier(0.22, 1.42, 0.4, 1) both;
-  transform-origin: 50% 30%;
+/* ── Window open: ONE of three selectable materialize effects (js/windows.js
+   picks 'confetti' | 'glitch' | 'origami', random by default or locked via
+   window.setOpenEffect). Each adds .is-opening plus its variant class. All are
+   transform/opacity/clip based (GPU-friendly) and neutralized under reduced
+   motion by the block further down. ── */
+
+/* Confetti option — a smooth, polished scale + fade in with a gentle overshoot
+   (the particle confetti burst is fired alongside from JS). */
+.window.is-opening.is-open-confetti {
+  animation: winConfetti 360ms cubic-bezier(0.22, 1.28, 0.36, 1) both;
+  transform-origin: 50% 35%;
+  will-change: transform, opacity;
 }
-@keyframes winOpen {
-  0%   { transform: scale(0.85) translateY(8px); opacity: 0; }
-  60%  { transform: scale(1.03) translateY(-2px); opacity: 1; }
+@keyframes winConfetti {
+  0%   { transform: scale(0.86) translateY(10px); opacity: 0; }
+  55%  { transform: scale(1.03) translateY(-3px); opacity: 1; }
   100% { transform: scale(1)    translateY(0);    opacity: 1; }
+}
+
+/* Origami option — a clean paper fold-in: the window unfolds down from its top
+   edge in 3D, overshoots once, then settles flat. */
+.window.is-opening.is-open-origami {
+  animation: winOrigami 560ms cubic-bezier(0.22, 1.0, 0.32, 1) both;
+  transform-origin: 50% 0%;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+@keyframes winOrigami {
+  0%   { transform: perspective(1100px) rotateX(-92deg) scale(0.94); opacity: 0; }
+  45%  { transform: perspective(1100px) rotateX(16deg)  scale(1.01); opacity: 1; }
+  70%  { transform: perspective(1100px) rotateX(-7deg)  scale(1);    opacity: 1; }
+  86%  { transform: perspective(1100px) rotateX(3deg)   scale(1);    opacity: 1; }
+  100% { transform: perspective(1100px) rotateX(0deg)   scale(1);    opacity: 1; }
+}
+
+/* Glitch option — the window snaps in with a brief, seamless digital glitch:
+   horizontal slice clipping + small position jitter that resolves to clean. */
+.window.is-opening.is-open-glitch {
+  animation: winGlitch 420ms steps(1, end) both;
+  will-change: transform, clip-path, opacity;
+}
+@keyframes winGlitch {
+  0%   { opacity: 0; transform: translateX(-7px); clip-path: inset(0 0 72% 0); }
+  12%  { opacity: 1; transform: translateX(7px);  clip-path: inset(42% 0 18% 0); }
+  24%  { transform: translateX(-5px); clip-path: inset(8% 0 64% 0); }
+  36%  { transform: translateX(4px);  clip-path: inset(62% 0 6% 0); }
+  48%  { transform: translateX(-3px); clip-path: inset(22% 0 44% 0); }
+  60%  { transform: translateX(3px);  clip-path: inset(4% 0 30% 0); }
+  72%  { transform: translateX(-2px); clip-path: inset(48% 0 12% 0); }
+  84%  { transform: translateX(1px);  clip-path: inset(0 0 8% 0); }
+  100% { opacity: 1; transform: translateX(0); clip-path: inset(0 0 0 0); }
 }
 
 /* ── Window close: scale down + fade out, then JS removes the element ── */
@@ -817,11 +868,11 @@ body {
    left/top drag math is unaffected. ── */
 .window.is-dragging {
   transform: scale(1.025) rotate(-0.8deg);
-  cursor: grabbing;
+  cursor: var(--cursor-grab, grabbing);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
   transition: transform 120ms ease, box-shadow 120ms ease;
 }
-.window.is-dragging .window-title { cursor: grabbing; }
+.window.is-dragging .window-title { cursor: var(--cursor-grab, grabbing); }
 
 /* ── Desktop app icons: out-of-phase bob + a springy hover bounce ── */
 .app-icon {
@@ -988,10 +1039,14 @@ body {
 .jib-button { fill: var(--rand-accent-2); }
 .jib-arm   { fill: none; stroke: color-mix(in srgb, var(--rand-accent) 50%, #2a2a3c); stroke-width: 8; stroke-linecap: round; }
 .jib-hand  { fill: color-mix(in srgb, var(--rand-accent-2) 50%, #ffffff); stroke: var(--rand-accent-2); stroke-width: 2; }
-.jib-hat-flop { fill: var(--rand-accent-2); }
-.jib-hat-band { fill: color-mix(in srgb, var(--rand-accent) 55%, #ffffff); }
-.jib-bell  { fill: color-mix(in srgb, var(--rand-accent) 85%, #ffffff); stroke: #14141f; stroke-width: 1; }
-.jib-head-disc { fill: color-mix(in srgb, var(--rand-accent) 26%, #f3f0fb); }
+.jib-hat-a { fill: var(--rand-accent); }
+.jib-hat-b { fill: color-mix(in srgb, var(--rand-accent) 14%, #fbf7ff); }
+.jib-hat-c { fill: var(--rand-accent-2); }
+.jib-hat-outline { fill: none; stroke: color-mix(in srgb, var(--rand-accent) 70%, #14141f); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.jib-hat-brim { fill: color-mix(in srgb, var(--rand-accent-2) 50%, #ffffff); stroke: color-mix(in srgb, var(--rand-accent) 50%, #14141f); stroke-width: 1.5; }
+.jib-pompom { fill: color-mix(in srgb, var(--rand-accent-2) 60%, #ffffff); stroke: #14141f; stroke-width: 1; }
+.jib-pompom-hi { fill: #ffffff; opacity: 0.8; }
+.jib-head-disc { fill: color-mix(in srgb, var(--rand-accent) 12%, #fdf9ff); }
 .jib-head-shade { fill: color-mix(in srgb, var(--rand-accent) 22%, #2a2a3c); opacity: 0.5; }
 .jib-head-ring { fill: none; stroke: var(--rand-accent-2); stroke-width: 3.5; }
 .jib-cheek { fill: color-mix(in srgb, var(--rand-accent) 45%, #ff9bbf); opacity: 0.7; }
@@ -999,18 +1054,35 @@ body {
 .jib-pupil { fill: #14141f; }
 .jib-glint { fill: #ffffff; }
 .jib-brow  { fill: none; stroke: #2a2a3c; stroke-width: 3; stroke-linecap: round; }
-.jib-nose  { fill: color-mix(in srgb, var(--rand-accent) 40%, #ff6f9c); }
+.jib-nose  { fill: #e23b2e; stroke: #8c1f17; stroke-width: 1; }
+.jib-nose-hi { fill: #ffffff; opacity: 0.75; }
 .jib-smile { fill: #b03050; stroke: #2a2a3c; stroke-width: 2.5; stroke-linejoin: round; }
 
 /* ── Playing state: orchestrated keyframe sequence ──
-   Lengthened, richer timeline (boot.js safety net is 5.6s):
+   Timeline (boot.js safety net is 6.4s; reveal waits for the swing to finish):
+     0.00–2.55s  whole rig scales UP through the cranking (mounting suspense)
      0.00–2.30s  crank winds up (6 turns, accelerating = mounting tension)
      2.10–2.40s  anticipation: box shivers/recoils just before the burst
      2.40s       lid flips open
-     2.55s       jack springs out on the coil (big overshoot + settle) -> jibPop
-     3.55s       friendly head wobble settles
+     2.55–3.85s  jack springs out on the coil (smooth damped spring) -> jibPop
+     3.80–5.30s  jack sways side to side on the coil, then settles -> jibWobble
      3.20s+      wordmark + tagline fade up underneath
 */
+/* Whole rig scales UP through the cranking for mounting suspense. Lives on the
+   <svg> element so it COMPOSES with the box shiver / lid / pop transforms inside
+   (those are on child groups in SVG coordinate space). Eases in so it creeps,
+   then holds large into the pop. */
+.boot-playing .boot-jib {
+  transform-origin: 50% 92%;
+  animation: jibStageGrow 2.55s ease-in-out both;
+}
+@keyframes jibStageGrow {
+  0%   { transform: scale(0.96); }
+  80%  { transform: scale(1.12); }   /* grows through the cranking (suspense) */
+  100% { transform: scale(1.0); }    /* relaxes to natural scale AS it pops, so
+                                        the SVG isn't re-rasterized scaled-up
+                                        while the jack spring animates = smooth */
+}
 .boot-playing .jib-box {
   transform-box: fill-box;
   transform-origin: 50% 100%;
@@ -1030,14 +1102,20 @@ body {
   transform-box: fill-box;
   transform-origin: 50% 100%;
   /* Hidden in the box until the pop. */
-  transform: translateY(150px) scale(0.55);
+  transform: translateY(150px) scale(0.62);
   opacity: 0;
-  animation: jibPop 1.15s cubic-bezier(0.2, 1.55, 0.4, 1) 2.55s both;
+  /* Promote to its own compositor layer so the complex SVG group isn't repainted
+     every frame as it springs (the main cause of the stutter). Linear base so the
+     per-keyframe easing fully shapes the spring. */
+  will-change: transform;
+  animation: jibPop 1.3s linear 2.55s both;
 }
 .boot-playing .jib-head {
   transform-box: fill-box;
   transform-origin: 50% 100%;
-  animation: jibWobble 1.6s ease-in-out 3.55s both;
+  /* Side-to-side swing on the coil right after the jack lands. boot.js waits for
+     THIS animation to finish before revealing, so the full swing is always seen. */
+  animation: jibWobble 1.5s ease-in-out 3.8s both;
 }
 .boot-playing .boot-wordmark {
   animation: jibTagline 0.6s ease 3.20s both;
@@ -1067,23 +1145,30 @@ body {
   100% { transform: rotate(-106deg); }
 }
 
-/* The pop: jack launches up out of the box, overshoots big, then settles. */
+/* The pop: a smooth, damped spring. The jack launches up out of the box,
+   overshoots, then oscillates with ever-smaller bounces until it settles flat.
+   Per-keyframe timing functions (ease-out on the up-swings, ease-in on the
+   down-swings) make the motion read as a natural spring rather than a jerk. */
 @keyframes jibPop {
-  0%   { transform: translateY(150px) scale(0.55); opacity: 0; }
-  18%  { transform: translateY(150px) scale(0.55); opacity: 1; }
-  40%  { transform: translateY(-34px) scale(1.14); opacity: 1; }
-  62%  { transform: translateY(10px)  scale(0.95); opacity: 1; }
-  80%  { transform: translateY(-7px)  scale(1.03); opacity: 1; }
-  92%  { transform: translateY(3px)   scale(0.99); opacity: 1; }
-  100% { transform: translateY(0)     scale(1);    opacity: 1; }
+  0%   { transform: translateY(150px) scale(0.62); opacity: 0; animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1); }
+  12%  { transform: translateY(150px) scale(0.62); opacity: 1; animation-timing-function: cubic-bezier(0.18, 0.6, 0.3, 1); }
+  42%  { transform: translateY(-36px) scale(1.06); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
+  58%  { transform: translateY(7px)   scale(0.985); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
+  72%  { transform: translateY(-13px) scale(1.022); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
+  84%  { transform: translateY(4px)   scale(0.994); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
+  93%  { transform: translateY(-2px)  scale(1.006); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
+  100% { transform: translateY(0)     scale(1); opacity: 1; }
 }
 
-/* A friendly post-landing head wobble on the coil. */
+/* A friendly post-landing side-to-side swing on the coil — a clear damped sway
+   that rocks left/right a couple of times before settling upright. */
 @keyframes jibWobble {
-  0%, 100% { transform: rotate(0deg); }
-  20%      { transform: rotate(6deg); }
-  50%      { transform: rotate(-5deg); }
-  78%      { transform: rotate(3deg); }
+  0%   { transform: rotate(0deg); }
+  15%  { transform: rotate(9deg); }
+  38%  { transform: rotate(-7deg); }
+  60%  { transform: rotate(5deg); }
+  80%  { transform: rotate(-3deg); }
+  100% { transform: rotate(0deg); }
 }
 
 @keyframes jibTagline {
@@ -1140,6 +1225,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   /* Hard stop on any boot keyframes that might otherwise be applied. */
+  .boot-playing .boot-jib,
   .boot-playing .jib-box,
   .boot-playing .jib-crank,
   .boot-playing .jib-lid,

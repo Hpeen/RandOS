@@ -2,8 +2,9 @@
 //
 // Every ~2-3 minutes the OS reaches up its sleeve and RANDOMIZES EVERYTHING at
 // once: it rerolls the desktop theme + wallpaper, repicks the pixel cursor,
-// re-skins every open window with fresh colors/fonts/chrome, teleports + resizes
-// every open window to a new on-screen spot, and fires a particle celebration.
+// re-skins every open window with fresh colors/fonts/chrome, RE-ARRANGES the
+// centered window clump (positions shuffle, fixed per-app sizes preserved), and
+// fires a particle celebration.
 //
 // The user is never blindsided: a few seconds BEFORE the reroll a calm, on-theme
 // HEADS-UP banner counts down ("Randomizing in 3 / 2 / 1") so they can brace.
@@ -22,13 +23,13 @@
 //
 // Reduced motion: the randomization STILL happens (theme/cursor/window changes
 // are content the user asked for), but it stays calm — the banner holds steady
-// instead of pulsing, the confetti celebration is minimal, and window moves jump
-// instantly (randomizeWindowBox already does that under reduced motion).
+// instead of pulsing, the confetti celebration is minimal, and the window clump
+// re-arranges instantly (the layout placement jumps under reduced motion).
 //
 // Plain browser script: an IIFE, no ES import/export, no libraries, no emoji. A
 // CommonJS guard at the bottom lets `node --check` / node tests load it headless.
 // Loaded LAST in index.html so rollWallpaper / rollCursor / getOpenWindows /
-// randomizeWindowBox / rollSkin / applySkin / FX all already exist.
+// relayoutWindows / rollSkin / applySkin / FX all already exist.
 (function () {
   'use strict';
 
@@ -142,7 +143,10 @@
       if (window.rollCursor) window.rollCursor();
     } catch (e) { /* ignore */ }
 
-    // 3) Re-skin + teleport/resize every open window.
+    // 3) Re-skin every open window (colors/fonts/chrome only — sizes are FIXED
+    //    per app and never change), then RE-ARRANGE the centered clump: a single
+    //    shuffle reorders the windows' positions while every window keeps its
+    //    fixed size. No per-window random resize.
     var wins = [];
     try {
       if (typeof window.getOpenWindows === 'function') wins = window.getOpenWindows();
@@ -165,14 +169,15 @@
           }
         }
       } catch (e) { /* skip a window that fails to re-skin */ }
-      try {
-        // Teleport + resize to a fresh clamped on-screen box (glides, or jumps
-        // instantly under reduced motion — handled inside randomizeWindowBox).
-        if (typeof window.randomizeWindowBox === 'function') {
-          window.randomizeWindowBox(rec.el);
-        }
-      } catch (e) { /* ignore */ }
     }
+
+    try {
+      // Shuffle the clump's positions (fixed sizes preserved). Glides, or jumps
+      // instantly under reduced motion (handled inside the layout placement).
+      if (typeof window.relayoutWindows === 'function') {
+        window.relayoutWindows({ shuffle: true });
+      }
+    } catch (e) { /* ignore */ }
 
     // 4) Particle celebration. FX self-skips/calms under reduced motion, but we
     //    also keep the rain gentler when reduced for good measure.

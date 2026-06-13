@@ -1,9 +1,15 @@
 // desktop.js — boots shell: wallpaper, launcher icons, global theme shuffle.
+// Each app declares its OWN fixed window size (w x h, in px). Sizes differ per
+// app and are NOT random — every launch of an app yields the same size, so the
+// thing that "randomizes" is WHERE the windows pack (a centered, no-overlap
+// clump), never how big they are. Sizes are deliberately generous so the clump
+// pulls focus toward the middle of the screen. The window layer clamps these
+// down only if they exceed the viewport (minus taskbar).
 const APPS = [
-  { name: 'calculator', title: 'Calculator', factory: () => makeCalculator() },
-  { name: 'clock',      title: 'Clock',      factory: () => makeClock() },
-  { name: 'calendar',   title: 'Calendar',   factory: () => makeCalendar() },
-  { name: 'randomizer', title: 'Randomizer', factory: () => makeRandomizer() }
+  { name: 'calculator', title: 'Calculator', size: { w: 340, h: 480 }, factory: () => makeCalculator() },
+  { name: 'clock',      title: 'Clock',      size: { w: 380, h: 380 }, factory: () => makeClock() },
+  { name: 'calendar',   title: 'Calendar',   size: { w: 360, h: 420 }, factory: () => makeCalendar() },
+  { name: 'randomizer', title: 'Randomizer', size: { w: 380, h: 440 }, factory: () => makeRandomizer() }
 ];
 
 function rollWallpaper() {
@@ -51,7 +57,16 @@ function launch(app) {
     contentEl = document.createElement('div');
     contentEl.textContent = `${app.title} crashed: ${err.message}`;
   }
-  openWindow({ title: app.title, appName: app.name, contentEl });
+  openWindow({ title: app.title, appName: app.name, contentEl, size: app.size });
+}
+
+// Shuffle the desktop theme: reroll the wallpaper/accent FIRST (sets
+// --rand-accent), then repick the pixel cursor so its sprite + the hover/grab
+// state sprites change AND re-tint to the fresh accent. Without the cursor
+// reroll the mouse sprite would keep its old shape/colour on every shuffle.
+function shuffleTheme() {
+  rollWallpaper();
+  if (typeof window.rollCursor === 'function') window.rollCursor();
 }
 
 function buildShuffle() {
@@ -63,7 +78,7 @@ function buildShuffle() {
   const label = document.createElement('span');
   label.textContent = 'Shuffle theme';
   btn.append(icon, label);
-  btn.addEventListener('click', rollWallpaper);
+  btn.addEventListener('click', shuffleTheme);
   taskbar.appendChild(btn);
 }
 

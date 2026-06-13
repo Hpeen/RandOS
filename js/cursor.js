@@ -167,6 +167,45 @@
     }
   ];
 
+  // ── State cursors (round 3): fixed sprites for interactive states ──────────────
+  // These do NOT rotate with the random per-load design — they're consistent
+  // SHAPES so hover/drag always read the same — but they ARE re-tinted with the
+  // live theme accent so they stay on-theme. HOVER is a pointing hand (for any
+  // clickable thing); GRAB is a closed fist (for dragging a window title).
+  var HOVER_DESIGN = {
+    name: 'point',
+    hotspot: [4, 0],             // fingertip
+    grid: [
+      '   OO    ',
+      '   OXO   ',
+      '   OXO   ',
+      '   OXO OO',
+      '   OXOOXO',
+      'OO OXOXOX',
+      'OXOOXOXOX',
+      'OXXOXXXXO',
+      ' OXXXXXXO',
+      ' OXXXXXXO',
+      '  OXXXXO ',
+      '  OXXXXO ',
+      '   OOOO  '
+    ]
+  };
+  var GRAB_DESIGN = {
+    name: 'grab',
+    hotspot: [4, 3],             // over the knuckles
+    grid: [
+      '  O O O  ',
+      ' OXOXOXO ',
+      'OXOXOXOXO',
+      'OXXXXXXXO',
+      'OXXXXXXXO',
+      'OXXXXXXXO',
+      ' OXXXXXO ',
+      '  OOOOO  '
+    ]
+  };
+
   // ── State ─────────────────────────────────────────────────────────────────────
   var currentDesign = null;
   var lastX = 0, lastY = 0;
@@ -245,22 +284,37 @@
     return 'data:image/svg+xml,' + encodeURIComponent(svg);
   }
 
-  // Build the full CSS cursor value (data-URI + hotspot + fallback) for a design.
-  function cursorValue(design, accent) {
+  // Build the full CSS cursor value (data-URI + hotspot + keyword fallback) for a
+  // design. The fallback keyword (auto/pointer/grabbing) is what the UA uses if
+  // the data-URI cursor can't load, so it should match the state.
+  function cursorValue(design, accent, fallback) {
     var uri = svgToDataUri(buildSvg(design, accent));
     var hx = design.hotspot[0] * CELL;
     var hy = design.hotspot[1] * CELL;
-    return 'url("' + uri + '") ' + hx + ' ' + hy + ', auto';
+    return 'url("' + uri + '") ' + hx + ' ' + hy + ', ' + (fallback || 'auto');
   }
 
   // ── Apply ───────────────────────────────────────────────────────────────────────
   // Set the cursor document-wide. Writing to both documentElement and body keeps
   // it consistent regardless of which element the UA resolves the cursor from.
+  // Also publish the hover/grab state sprites as :root CSS vars so base.css can
+  // swap the native pointer/grab cursors for these on interactive elements.
   function applyCursor(design, accent) {
     if (typeof document === 'undefined') return;
-    var value = cursorValue(design, accent);
+    var value = cursorValue(design, accent, 'auto');
     if (document.documentElement) document.documentElement.style.cursor = value;
     if (document.body) document.body.style.cursor = value;
+    setStateCursors(accent);
+  }
+
+  // Publish the hover + drag state cursors as CSS custom properties on :root.
+  // base.css references them as `cursor: var(--cursor-pointer, pointer)` etc., so
+  // a missing var degrades gracefully to the native keyword.
+  function setStateCursors(accent) {
+    if (typeof document === 'undefined' || !document.documentElement) return;
+    var s = document.documentElement.style;
+    s.setProperty('--cursor-pointer', cursorValue(HOVER_DESIGN, accent, 'pointer'));
+    s.setProperty('--cursor-grab', cursorValue(GRAB_DESIGN, accent, 'grabbing'));
   }
 
   // ── Trail ─────────────────────────────────────────────────────────────────────

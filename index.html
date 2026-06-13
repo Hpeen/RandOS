@@ -71,16 +71,19 @@
 
           <!-- Head: an expressive character face with shading -->
           <g class="jib-head">
-            <!-- jester hat behind the head -->
+            <!-- Tall pointed striped jester hat with a pompom (classic
+                 jack-in-the-box clown), seated on the head with a fur cuff.
+                 Built from stacked trapezoid bands that narrow to the tip. -->
             <g class="jib-hat">
-              <path class="jib-hat-flop" d="M134 30
-                C 112 14, 100 28, 118 44 C 104 40, 104 54, 120 54 Z" />
-              <path class="jib-hat-flop" d="M186 30
-                C 208 14, 220 28, 202 44 C 216 40, 216 54, 200 54 Z" />
-              <path class="jib-hat-band" d="M132 50 Q160 40 188 50 L184 62 Q160 54 136 62 Z" />
-              <circle cx="106" cy="50" r="5" class="jib-bell" />
-              <circle cx="214" cy="50" r="5" class="jib-bell" />
-              <circle cx="160" cy="34" r="5" class="jib-bell" />
+              <path class="jib-hat-a" d="M140 18 L180 18 L186 30 L134 30 Z" />
+              <path class="jib-hat-b" d="M145 6 L175 6 L180 18 L140 18 Z" />
+              <path class="jib-hat-c" d="M151 -6 L169 -6 L175 6 L145 6 Z" />
+              <path class="jib-hat-a" d="M156 -18 L164 -18 L169 -6 L151 -6 Z" />
+              <path class="jib-hat-b" d="M160 -26 L164 -18 L156 -18 Z" />
+              <path class="jib-hat-outline" d="M134 30 L160 -26 L186 30" />
+              <path class="jib-hat-brim" d="M134 30 Q160 38 186 30 L185 36 Q160 43 135 36 Z" />
+              <circle cx="160" cy="-26" r="6.5" class="jib-pompom" />
+              <circle cx="158" cy="-28" r="2"  class="jib-pompom-hi" />
             </g>
             <!-- face -->
             <circle cx="160" cy="62" r="34" class="jib-head-disc" />
@@ -100,8 +103,9 @@
             <!-- raised expressive brows -->
             <path class="jib-brow" d="M140 44 Q148 40 156 44" />
             <path class="jib-brow" d="M164 44 Q172 40 180 44" />
-            <!-- nose -->
-            <circle cx="160" cy="66" r="5" class="jib-nose" />
+            <!-- classic round red clown nose -->
+            <circle cx="160" cy="68" r="6.5" class="jib-nose" />
+            <circle cx="157.5" cy="65.5" r="2" class="jib-nose-hi" />
             <!-- big open grin -->
             <path class="jib-smile" d="M144 74 Q160 92 176 74 Q160 84 144 74 Z" />
           </g>
@@ -147,7 +151,7 @@
   </div>
   <script src="js/boot.js"></script>
   <!-- Loaded LAST so every global it drives (rollWallpaper, rollCursor,
-       getOpenWindows, randomizeWindowBox, rollSkin/applySkin, FX) already exists. -->
+       getOpenWindows, relayoutWindows, rollSkin/applySkin, FX) already exists. -->
   <script src="js/chaos.js"></script>
 </body>
 </html>

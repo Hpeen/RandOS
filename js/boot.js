@@ -139,7 +139,7 @@
     if (!stage) { return; }
     var layer = document.createElement('div');
     layer.className = 'boot-confetti';
-    var n = 26 + ((Math.random() * 14) | 0);
+    var n = 18 + ((Math.random() * 10) | 0);
     for (var i = 0; i < n; i++) {
       var s = document.createElement('span');
       s.className = 'boot-shard';
@@ -167,7 +167,7 @@
     var f = fx();
     if (f && typeof f.burst === 'function') {
       var p = boxOpeningPoint();
-      f.burst(p.x, p.y, { count: 30 + ((Math.random() * 24) | 0), spread: Math.PI * 1.5, speed: 320 });
+      f.burst(p.x, p.y, { count: 22 + ((Math.random() * 14) | 0), spread: Math.PI * 1.5, speed: 320 });
     }
   }
 
@@ -185,9 +185,11 @@
     }
   }
 
-  // Pop burst is time-driven so it fires right as the jack clears the lid
-  // (~2.55s delay + ~0.30s rise). Independent of the reveal path.
-  var popTimer = setTimeout(popEffect, 2850);
+  // Pop burst is time-driven to fire at the jack's APEX (~3.12s), AFTER the fast
+  // launch frames, so the confetti spawn never competes with the spring for the
+  // main thread (keeps the launch smooth) and lands as a celebratory top-of-pop
+  // flourish. Independent of the reveal path.
+  var popTimer = setTimeout(popEffect, 3120);
 
   // Wrap reveal ONCE: clear the pending pop burst (if we're skipping early) and
   // fire the celebratory reveal effect, then run the original reveal/teardown.
@@ -203,21 +205,22 @@
   };
 
   // The orchestrated sequence: crank wind-up -> box shiver -> lid flip ->
-  // jack pop (ends ~3.70s) -> settle wobble (~5.15s). The animationend on the
-  // jack's pop is the primary reveal trigger; the timer is the guaranteed
-  // backstop.
+  // jack pop (ends ~3.85s) -> side-to-side swing (jibWobble, ends ~5.30s). The
+  // reveal waits for the SWING to finish (animationend bubbles from .jib-head up
+  // to .jib-jack) so the full sway is seen before the overlay fades; the timer is
+  // the guaranteed backstop.
   var jack = overlay.querySelector('.jib-jack');
   if (jack) {
     jack.addEventListener('animationend', function (ev) {
-      if (ev.animationName === 'jibPop') {
-        // Small hold so the landed jack is readable before the reveal.
-        setTimeout(reveal, 680);
+      if (ev.animationName === 'jibWobble') {
+        // Small hold so the settled, upright jack is readable before the reveal.
+        setTimeout(reveal, 300);
       }
     });
   }
 
   // Hard safety net: overlay is ALWAYS gone by this point no matter what. The
-  // longest natural path is pop-end (~3.70s) + 0.68s hold = ~4.38s reveal; this
-  // 5.6s backstop comfortably exceeds it so the user is never trapped.
-  safetyTimer = setTimeout(reveal, 5600);
+  // longest natural path is swing-end (~5.30s) + 0.30s hold = ~5.60s reveal; this
+  // 6.4s backstop comfortably exceeds it so the user is never trapped.
+  safetyTimer = setTimeout(reveal, 6400);
 })();
