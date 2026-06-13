@@ -13,6 +13,7 @@ const APPS = [
   { name: 'soundboard', title: 'Sound Board', size: { w: 440, h: 440 }, factory: () => makeSoundboard() },
   { name: 'suggestionbox', title: 'Suggestion Box', size: { w: 360, h: 420 }, factory: () => makeSuggestionBox() },
   { name: 'quote', title: 'Quote of the Session', size: { w: 440, h: 300 }, factory: () => makeQuote() },
+  { name: 'spinner', title: 'Spinner', size: { w: 460, h: 520 }, factory: () => makeSpinner() },
 ];
 
 function rollWallpaper() {
