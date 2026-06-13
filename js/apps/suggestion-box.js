@@ -21,6 +21,58 @@ function pickSuggestion(list, rng, prev) {
   return list[i];
 }
 
+// makeSuggestionBox() -> root element. Clicking the box toggles the lid open
+// (revealing a fresh random suggestion) and closed.
+function makeSuggestionBox() {
+  const root = document.createElement('div');
+  root.className = 'sgbox';
+
+  const stage = document.createElement('button'); // the whole box is the button
+  stage.type = 'button';
+  stage.className = 'sgbox-stage';
+  stage.setAttribute('aria-label', 'Open the suggestion box');
+
+  const slip = document.createElement('div');
+  slip.className = 'sgbox-slip';
+  const slipText = document.createElement('span');
+  slip.appendChild(slipText);
+
+  const lid = document.createElement('div');
+  lid.className = 'sgbox-lid';
+  const body = document.createElement('div');
+  body.className = 'sgbox-body';
+
+  stage.append(slip, body, lid);
+
+  const hint = document.createElement('div');
+  hint.className = 'sgbox-hint';
+  hint.textContent = 'Click the box for a suggestion';
+
+  root.append(stage, hint);
+
+  let open = false;
+  let prev = null;
+  stage.addEventListener('click', () => {
+    open = !open;
+    root.classList.toggle('is-open', open);
+    if (open) {
+      prev = pickSuggestion(SUGGESTIONS, Math.random, prev);
+      slipText.textContent = prev;
+      hint.textContent = 'Click again to close';
+      if (window.FX) {
+        const r = stage.getBoundingClientRect();
+        window.FX.burst(r.left + r.width / 2, r.top + r.height / 3, { count: 12 });
+      }
+    } else {
+      hint.textContent = 'Click the box for a suggestion';
+    }
+  });
+
+  return root;
+}
+
+if (typeof window !== 'undefined') window.makeSuggestionBox = makeSuggestionBox;
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { SUGGESTIONS: SUGGESTIONS, pickSuggestion: pickSuggestion };
 }
