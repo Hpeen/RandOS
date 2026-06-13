@@ -1,6 +1,68 @@
 // windows.js — opens app content into draggable, focusable windows.
 let zCounter = 100;
-let offsetSeed = 0;
+
+// Layout constants for placement math. Taskbar is ~46px tall at the bottom
+// (see css/base.css #taskbar); EDGE keeps a small gutter from every screen
+// edge so the window never hugs the very border. MIN_* are usability floors:
+// a window narrower/shorter than these is awkward to use, so we never roll
+// below them (and clamp up if a tiny viewport would otherwise force it).
+const TASKBAR_H = 46;
+const EDGE = 8;
+const MIN_W = 240;
+const MIN_H = 180;
+
+// Live registry of open windows. Each entry has at least { el, appName }.
+// Exposed via window.getOpenWindows() for the chaos module (later task).
+const openWindows = [];
+
+// Roll a random, varied, on-screen-and-usable box { left, top, width, height }
+// for a window. Size is rolled first within tasteful bounds, clamped to what
+// the current viewport can actually fit (so it never spawns larger than the
+// usable area), then a random position is chosen inside the remaining slack so
+// the WHOLE window — title bar included — stays fully on-screen and grabbable.
+function rollWindowBox() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  // Usable area (inside the edge gutters, above the taskbar).
+  const availW = Math.max(MIN_W, vw - EDGE * 2);
+  const availH = Math.max(MIN_H, vh - TASKBAR_H - EDGE * 2);
+
+  // Tasteful size caps: never wider/taller than 70% of the usable area, and
+  // never beyond the absolute caps. Floors keep the window usable.
+  const maxW = Math.max(MIN_W, Math.min(520, Math.round(availW * 0.7), availW));
+  const maxH = Math.max(MIN_H, Math.min(440, Math.round(availH * 0.7), availH));
+  const loW = Math.min(260, maxW);
+  const loH = Math.min(200, maxH);
+
+  let width = Math.round(loW + Math.random() * (maxW - loW));
+  let height = Math.round(loH + Math.random() * (maxH - loH));
+
+  // Final clamp so the rolled size can never exceed the available area
+  // (covers tiny viewports where even the floor would overflow).
+  width = Math.max(MIN_W, Math.min(width, availW));
+  height = Math.max(MIN_H, Math.min(height, availH));
+
+  // Random position within the slack left after placing the box. Clamp the
+  // ranges so left/top never go negative (window fully on-screen even when
+  // size == available area).
+  const maxLeft = Math.max(EDGE, vw - width - EDGE);
+  const maxTop = Math.max(EDGE, vh - TASKBAR_H - height - EDGE);
+  const left = Math.round(EDGE + Math.random() * (maxLeft - EDGE));
+  const top = Math.round(EDGE + Math.random() * (maxTop - EDGE));
+
+  return { left, top, width, height };
+}
+
+// Apply a rolled box to a window element via inline left/top/width/height.
+// These stay independent of the transform-based motion system and the
+// left/top drag math.
+function applyWindowBox(win, box) {
+  win.style.left = box.left + 'px';
+  win.style.top = box.top + 'px';
+  win.style.width = box.width + 'px';
+  win.style.height = box.height + 'px';
+}
 
 // openWindow({ title, appName, contentEl }) -> windowEl
 function openWindow({ title, appName, contentEl }) {
@@ -9,11 +71,9 @@ function openWindow({ title, appName, contentEl }) {
   const win = document.createElement('div');
   win.className = 'window';
 
-  // Cascade new windows so they don't stack exactly.
-  const slot = offsetSeed % 6;
-  offsetSeed++;
-  win.style.left = (80 + slot * 28) + 'px';
-  win.style.top  = (70 + slot * 24) + 'px';
+  // Random on-screen position + varied random size (no grid/cascade).
+  const box = rollWindowBox();
+  applyWindowBox(win, box);
 
   // Per-window random skin.
   const skin = rollSkin(appName);
@@ -45,6 +105,15 @@ function openWindow({ title, appName, contentEl }) {
   win.appendChild(body);
   desktop.appendChild(win);
 
+  // Particle pop at the new window's center so opening feels alive. FX
+  // self-guards reduced-motion; we still guard the global in case the
+  // effects engine failed to load.
+  if (window.FX && typeof window.FX.burst === 'function') {
+    const cx = box.left + box.width / 2;
+    const cy = box.top + box.height / 2;
+    window.FX.burst(cx, cy, { spread: 1 });
+  }
+
   // Springy open animation; remove the class once it has played so the
   // transform is freed for dragging. Reduced-motion users skip it entirely.
   if (!prefersReducedMotion()) {
@@ -72,11 +141,20 @@ function openWindow({ title, appName, contentEl }) {
   // Close animates the window out, THEN tears down. removeDrag() must always
   // run so the window-level mousemove/mouseup listeners are cleaned up.
   const removeDrag = makeDraggable(win, bar);
+
+  // Register in the open-window list so the chaos module can enumerate and
+  // manipulate live windows. Removed in teardown so the list never leaks or
+  // holds stale entries.
+  const record = { el: win, appName, entry };
+  openWindows.push(record);
+
   let closing = false;
   function teardown() {
     removeDrag();
     win.remove();
     entry.remove();
+    const idx = openWindows.indexOf(record);
+    if (idx !== -1) openWindows.splice(idx, 1);
   }
   close.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -147,5 +225,32 @@ function makeDraggable(win, handle) {
   return function cleanup() {
     window.removeEventListener('mousemove', onMove);
     window.removeEventListener('mouseup', onUp);
+  };
+}
+
+// ── Open-window registry globals (consumed by the chaos module, later task) ──
+
+// Returns a snapshot array of the live window records (each { el, appName, ... }).
+// A copy so callers can't corrupt the internal list while iterating.
+if (typeof window !== 'undefined') {
+  window.getOpenWindows = function getOpenWindows() {
+    return openWindows.slice();
+  };
+
+  // Re-roll a NEW random position + size for an already-open window and apply
+  // it, keeping it fully on-screen + usable via the same clamping as on open.
+  // Glides via the .is-rebox transition (jumps instantly under reduced motion,
+  // where the CSS disables that transition). Safe to call with any element.
+  window.randomizeWindowBox = function randomizeWindowBox(el) {
+    if (!el || !el.style) return;
+    const box = rollWindowBox();
+    el.classList.add('is-rebox');
+    applyWindowBox(el, box);
+    // Drop the transition class after it plays so dragging stays instant. The
+    // duration here matches the longest .is-rebox transition in css/base.css.
+    window.setTimeout(function () {
+      el.classList.remove('is-rebox');
+    }, 420);
+    return box;
   };
 }
