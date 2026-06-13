@@ -1349,7 +1349,7 @@ body {
   text-align: center; opacity: 0; transform: translateY(20px) scale(.6);
   transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .25s ease; }
 .sgbox.is-open .sgbox-lid { transform: rotate(-105deg); }
-.sgbox.is-open .sgbox-slip { opacity: 1; transform: translateY(-30px) scale(1); }
+.sgbox.is-open .sgbox-slip { opacity: 1; transform: translateY(-30px) scale(1); z-index: 1; }
 .sgbox-hint { font-size: 13px; opacity: .7; }
 @media (prefers-reduced-motion: reduce) {
   .sgbox-lid, .sgbox-slip { transition: none; }

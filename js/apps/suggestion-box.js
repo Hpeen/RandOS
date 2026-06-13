@@ -59,12 +59,14 @@ function makeSuggestionBox() {
       prev = pickSuggestion(SUGGESTIONS, Math.random, prev);
       slipText.textContent = prev;
       hint.textContent = 'Click again to close';
+      stage.setAttribute('aria-label', 'Close the suggestion box');
       if (window.FX) {
         const r = stage.getBoundingClientRect();
         window.FX.burst(r.left + r.width / 2, r.top + r.height / 3, { count: 12 });
       }
     } else {
       hint.textContent = 'Click the box for a suggestion';
+      stage.setAttribute('aria-label', 'Open the suggestion box');
     }
   });
 
