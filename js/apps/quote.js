@@ -18,6 +18,7 @@ var QUOTES = [
   { text: 'My code works and I have no idea why.', by: 'Every dev ever', kind: 'joke' }
 ];
 
+// Assumes list.length >= 1 (QUOTES is a non-empty constant).
 function pickQuote(list, rng) {
   var r = (typeof rng === 'function' ? rng : Math.random)();
   var i = Math.floor(r * list.length);
@@ -37,8 +38,11 @@ function makeQuote() {
 
   const text = document.createElement('blockquote');
   text.className = 'quote-text';
+  const quoteText = document.createElement('span');
+  quoteText.className = 'quote-text-inner';
   const by = document.createElement('cite');
   by.className = 'quote-by';
+  text.append(quoteText, by);   // cite now lives inside the blockquote
   const tag = document.createElement('span');
   tag.className = 'quote-kind';
 
@@ -49,7 +53,7 @@ function makeQuote() {
 
   function show() {
     const q = pickQuote(QUOTES, Math.random);
-    text.textContent = q.text;
+    quoteText.textContent = q.text;
     by.textContent = '— ' + q.by; // em dash + attribution
     tag.textContent = q.kind;
     tag.dataset.kind = q.kind;
@@ -57,7 +61,7 @@ function makeQuote() {
   again.addEventListener('click', show);
   show(); // fresh quote on every open
 
-  root.append(mark, text, by, tag, again);
+  root.append(mark, text, tag, again);
   return root;
 }
 

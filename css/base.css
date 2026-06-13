@@ -1358,7 +1358,7 @@ body {
 .quote-app { display: flex; flex-direction: column; height: 100%; gap: 10px; justify-content: center; }
 .quote-mark { font-family: Georgia, serif; font-size: 48px; line-height: .6; color: var(--rand-accent); }
 .quote-text { margin: 0; font-family: var(--rand-font-head); font-size: 18px; }
-.quote-by { font-style: normal; opacity: .75; align-self: flex-end; }
+.quote-by { display: block; text-align: right; font-style: normal; opacity: .75; margin-top: 6px; }
 .quote-kind { align-self: flex-start; font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
   padding: 2px 8px; border-radius: 999px; background: var(--rand-accent-2, #28e0c8);
   color: var(--rand-accent-2-text, #000); }
