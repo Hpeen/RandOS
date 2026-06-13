@@ -23,5 +23,63 @@
   <script src="js/apps/calendar.js"></script>
   <script src="js/apps/randomizer-app.js"></script>
   <script src="js/desktop.js"></script>
+
+  <!-- Boot overlay: covers the screen from first paint so the desktop never
+       flashes before the jack-in-the-box plays. boot.js either runs the
+       animation or removes this instantly if already booted this session.
+       Kept LAST in <body> and given an opaque background via .boot-cover so
+       it paints over everything immediately, before boot.js even runs. -->
+  <div id="boot" class="boot-cover" aria-hidden="true">
+    <div class="boot-stage">
+      <svg class="boot-jib" viewBox="0 0 240 260" width="240" height="260"
+           role="img" aria-label="RandOS booting" focusable="false">
+        <!-- Springing jack: the RandOS wordmark on a coil. Hidden in the box,
+             then pops up on boot-pop. Drawn first so the box lid sits over it. -->
+        <g class="jib-jack">
+          <!-- Coil spring -->
+          <path class="jib-coil" d="M120 150
+            C 95 142, 95 128, 120 120
+            C 145 112, 145 98, 120 90
+            C 95 82, 95 68, 120 60
+            C 145 52, 145 40, 120 34" />
+          <!-- Jack head: a friendly character disc with the wordmark -->
+          <g class="jib-head">
+            <circle cx="120" cy="22" r="34" class="jib-head-disc" />
+            <circle cx="120" cy="22" r="34" class="jib-head-ring" />
+            <!-- eyes -->
+            <circle cx="108" cy="16" r="4.2" class="jib-eye" />
+            <circle cx="132" cy="16" r="4.2" class="jib-eye" />
+            <!-- smile -->
+            <path class="jib-smile" d="M106 28 Q120 40 134 28" />
+            <text x="120" y="54" class="jib-mark" text-anchor="middle">RandOS</text>
+          </g>
+        </g>
+
+        <!-- Box body -->
+        <g class="jib-box">
+          <rect x="60" y="150" width="120" height="92" rx="10" class="jib-box-body" />
+          <rect x="60" y="150" width="120" height="92" rx="10" class="jib-box-edge" />
+          <!-- decorative panel band -->
+          <rect x="72" y="174" width="96" height="46" rx="6" class="jib-box-panel" />
+          <line x1="120" y1="174" x2="120" y2="220" class="jib-box-seam" />
+          <line x1="72" y1="197" x2="168" y2="197" class="jib-box-seam" />
+
+          <!-- Lid: hinged at the back-left, flips open on boot-lid -->
+          <g class="jib-lid">
+            <rect x="58" y="138" width="124" height="20" rx="6" class="jib-lid-top" />
+          </g>
+
+          <!-- Crank: handle on the side that winds up (rotates) before the pop -->
+          <g class="jib-crank">
+            <line x1="180" y1="196" x2="206" y2="196" class="jib-crank-arm" />
+            <circle cx="206" cy="196" r="7" class="jib-crank-knob" />
+            <circle cx="180" cy="196" r="5" class="jib-crank-hub" />
+          </g>
+        </g>
+      </svg>
+      <div class="boot-tagline">RandOS</div>
+    </div>
+  </div>
+  <script src="js/boot.js"></script>
 </body>
 </html>
