@@ -100,8 +100,9 @@ function makeCalendar() {
     // Once laid out, center today's row in the scrollable column.
     requestAnimationFrame(() => {
       if (todayRow && days.scrollHeight > days.clientHeight) {
-        days.scrollTop =
-          todayRow.offsetTop - (days.clientHeight - todayRow.offsetHeight) / 2;
+        const daysRect = days.getBoundingClientRect();
+        const rowRect  = todayRow.getBoundingClientRect();
+        days.scrollTop += rowRect.top - daysRect.top - (daysRect.height - rowRect.height) / 2;
       }
     });
     return face;
