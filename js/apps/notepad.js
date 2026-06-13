@@ -24,7 +24,7 @@ function chaoticAutocorrect(text, rng) {
   if (pickIdx >= eligible.length) pickIdx = eligible.length - 1;
   var wi = eligible[pickIdx];
   var bareWord = words[wi].toLowerCase().replace(/[^a-z]/g, '');
-  words[wi] = words[wi].replace(bareWord, SWAPS[bareWord]);
+  words[wi] = words[wi].replace(new RegExp(bareWord, 'i'), SWAPS[bareWord]);
   return words.join('');
 }
 
@@ -70,6 +70,7 @@ function makeNotepad() {
     if (calmOn || document.activeElement === note) return;
     const before = note.textContent;
     const after = chaoticAutocorrect(before, Math.random);
+      // note: assigning textContent also collapses any <br>/block newlines; line breaks are not preserved (acceptable for this chaotic app).
     if (after !== before) note.textContent = after;
   }, 4200);
 
@@ -78,20 +79,24 @@ function makeNotepad() {
     if (!alive()) { clearInterval(rsTimer); return; }
     if (calmOn || reduced() || document.activeElement === note) return;
     const words = note.textContent.split(' ');
-    if (words.length < 2) return;
-    const i = Math.floor(Math.random() * words.length);
+    // Only style a real (non-empty) word; empties come from double spaces.
+    const nonEmpty = words.map((w, idx) => idx).filter((idx) => words[idx].length > 0);
+    if (nonEmpty.length < 2) return;
+    const i = nonEmpty[Math.floor(Math.random() * nonEmpty.length)];
     const span = document.createElement('span');
     span.className = 'np-wild';
     span.style.fontFamily = FONTS[Math.floor(Math.random() * FONTS.length)];
     span.style.color = COLORS[Math.floor(Math.random() * COLORS.length)];
     span.style.fontSize = (0.8 + Math.random() * 1.2).toFixed(2) + 'em';
-    span.textContent = words[i] + ' ';
-    words[i] = ' '; // placeholder
-    // Rebuild as text + the one styled span (keeps it simple + safe, no innerHTML).
+    span.textContent = words[i];
+    // Rebuild: the chosen index becomes the styled span; single spaces rejoin
+    // tokens (reconstructing original spacing, including double spaces) with no
+    // trailing space added. No innerHTML.
     note.textContent = '';
     words.forEach((w, idx) => {
-      if (w === ' ') { note.appendChild(span); }
-      else note.appendChild(document.createTextNode(w + (idx < words.length - 1 ? ' ' : '')));
+      if (idx === i) note.appendChild(span);
+      else note.appendChild(document.createTextNode(w));
+      if (idx < words.length - 1) note.appendChild(document.createTextNode(' '));
     });
   }, 5300);
 

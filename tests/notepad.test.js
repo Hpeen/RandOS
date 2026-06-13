@@ -10,10 +10,14 @@ test('SWAPS is a non-empty map of word -> replacement', () => {
 });
 
 test('chaoticAutocorrect swaps exactly one known word when one is present', () => {
-  // rng=()=>0 picks the first eligible occurrence.
   const out = chaoticAutocorrect('please send the file now', () => 0);
-  assert.notStrictEqual(out, 'please send the file now');
-  assert.ok(out.split(' ').length === 5, 'word count preserved');
+  assert.strictEqual(out, 'pls send the file now');
+});
+
+test('chaoticAutocorrect swaps a capitalized word (case-insensitive)', () => {
+  const out = chaoticAutocorrect('The file is here', () => 0);
+  assert.notStrictEqual(out, 'The file is here');
+  assert.strictEqual(out.split(' ').length, 4);
 });
 
 test('chaoticAutocorrect returns text unchanged when no known word present', () => {
