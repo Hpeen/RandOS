@@ -120,6 +120,14 @@
       }
     }
     ctx = canvas.getContext('2d');
+    if (!ctx) {
+      // getContext returned null (e.g. context-creation limit hit). Reset so a
+      // later call can retry rather than silently deadlocking with a truthy
+      // canvas that has no drawable context.
+      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+      canvas = null;
+      return null;
+    }
     resize();
     bindListeners();
     return canvas;
@@ -330,7 +338,7 @@
 
     var list = [];
     for (var i = 0; i < count; i++) {
-      var kind = fixedKind || (randomizeEach ? pick(KINDS) : pick(KINDS));
+      var kind = fixedKind || pick(KINDS);
       var color = pick(colors);
       list.push(makeParticle(x, y, kind, color, opts));
     }
