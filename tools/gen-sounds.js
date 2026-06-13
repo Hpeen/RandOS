@@ -35,7 +35,7 @@ const sine = (t, f) => Math.sin(2 * Math.PI * f * t);
 const noise = () => Math.random() * 2 - 1;
 
 const SOUNDS = {
-  blip:  () => render(0.18, (t, i, n) => 0.5 * sine(t, 660) * env(t, 0.18)),
+  blip:  () => render(0.18, (t) => 0.5 * sine(t, 660) * env(t, 0.18)),
   zap:   () => render(0.30, (t) => 0.45 * sine(t, 900 - 700 * t) * env(t, 0.30)),
   chime: () => render(0.60, (t) => 0.3 * (sine(t, 880) + sine(t, 1320) + sine(t, 1760)) / 3 * env(t, 0.60, 0.005, 0.4)),
   coin:  () => render(0.35, (t) => 0.4 * sine(t, t < 0.07 ? 988 : 1319) * env(t, 0.35, 0.002, 0.2)),

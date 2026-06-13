@@ -19,4 +19,6 @@ test('pickRandomSound returns a member of SOUNDS, using injected rng', () => {
   assert.strictEqual(first, SOUNDS[0]);
   const last = pickRandomSound(() => 0.999);
   assert.strictEqual(last, SOUNDS[SOUNDS.length - 1]);
+  const atOne = pickRandomSound(() => 1);
+  assert.strictEqual(atOne, SOUNDS[SOUNDS.length - 1]);
 });
