@@ -45,6 +45,17 @@ function openWindow({ title, appName, contentEl }) {
   win.appendChild(body);
   desktop.appendChild(win);
 
+  // Springy open animation; remove the class once it has played so the
+  // transform is freed for dragging. Reduced-motion users skip it entirely.
+  if (!prefersReducedMotion()) {
+    win.classList.add('is-opening');
+    win.addEventListener('animationend', function onOpen(e) {
+      if (e.target !== win) return;
+      win.classList.remove('is-opening');
+      win.removeEventListener('animationend', onOpen);
+    });
+  }
+
   focusWindow(win);
 
   // Taskbar entry.
@@ -58,15 +69,49 @@ function openWindow({ title, appName, contentEl }) {
   // Focus on click anywhere in window.
   win.addEventListener('mousedown', () => focusWindow(win));
 
-  // Close removes window + taskbar entry.
+  // Close animates the window out, THEN tears down. removeDrag() must always
+  // run so the window-level mousemove/mouseup listeners are cleaned up.
   const removeDrag = makeDraggable(win, bar);
-  close.addEventListener('click', (e) => {
-    e.stopPropagation();
+  let closing = false;
+  function teardown() {
     removeDrag();
     win.remove();
     entry.remove();
+  }
+  close.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (closing) return; // guard against double-click
+    closing = true;
+
+    // Reduced-motion: skip the animation and tear down immediately.
+    if (prefersReducedMotion()) {
+      teardown();
+      return;
+    }
+
+    win.classList.add('is-closing');
+    let torn = false;
+    function done() {
+      if (torn) return;
+      torn = true;
+      teardown();
+    }
+    win.addEventListener('animationend', function onClose(e2) {
+      if (e2.target !== win) return;
+      win.removeEventListener('animationend', onClose);
+      done();
+    });
+    // Safety fallback so a window can never get stuck if animationend
+    // never fires (animation suppressed, element hidden, etc.).
+    setTimeout(done, 400);
   });
   return win;
+}
+
+function prefersReducedMotion() {
+  return typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 function focusWindow(win) {
@@ -79,6 +124,11 @@ function makeDraggable(win, handle) {
     dragging = true;
     startX = e.clientX; startY = e.clientY;
     originX = win.offsetLeft; originY = win.offsetTop;
+    // Cosmetic "grabbed" tilt/scale. Position still moves via left/top, so the
+    // drag math is untouched. Drop any leftover open animation class first so
+    // the two transforms don't fight on the same element.
+    win.classList.remove('is-opening');
+    win.classList.add('is-dragging');
     e.preventDefault();
   }
   function onMove(e) {
@@ -86,7 +136,11 @@ function makeDraggable(win, handle) {
     win.style.left = (originX + e.clientX - startX) + 'px';
     win.style.top  = (originY + e.clientY - startY) + 'px';
   }
-  function onUp() { dragging = false; }
+  function onUp() {
+    if (!dragging) return;
+    dragging = false;
+    win.classList.remove('is-dragging');
+  }
   handle.addEventListener('mousedown', onDown);
   window.addEventListener('mousemove', onMove);
   window.addEventListener('mouseup', onUp);
