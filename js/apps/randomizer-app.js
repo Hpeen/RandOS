@@ -23,21 +23,21 @@ function makeRandomizer() {
   // text, glyph an optional oversized symbol (the die pip face).
   const ACTIONS = [
     {
-      key: 'coin', label: 'Coin', glyph: '🪙', name: 'Flip',
+      label: 'Coin', glyph: '🪙', name: 'Flip',
       roll() {
         const heads = Math.random() < 0.5;
         return { value: heads ? 'Heads' : 'Tails', glyph: heads ? '👑' : '🪙' };
       }
     },
     {
-      key: 'dice', label: 'Dice', glyph: '🎲', name: 'Roll',
+      label: 'Dice', glyph: '🎲', name: 'Roll',
       roll() {
         const n = Math.floor(Math.random() * 6); // 0–5, never out of pip range
         return { value: String(n + 1), glyph: DICE_FACES[n] };
       }
     },
     {
-      key: 'number', label: '1–100', glyph: '🔢', name: 'Pick',
+      label: '1–100', glyph: '🔢', name: 'Pick',
       roll() {
         const n = 1 + Math.floor(Math.random() * 100); // 1–100 inclusive
         return { value: String(n), glyph: null };
@@ -99,19 +99,10 @@ function makeRandomizer() {
     });
   }
 
-  // ── Cards layout: result up top, the three actions as a horizontal row ────
-  function buildCards() {
-    const face = el('div', 'rng-cards');
-    const result = buildResult();
-    const actions = el('div', 'rng-actions');
-    for (const btn of buildButtons(result)) actions.appendChild(btn);
-    face.append(result.el, actions);
-    return face;
-  }
-
-  // ── Stack layout: a vertical column — result on top, actions stacked ──────
-  function buildStack() {
-    const face = el('div', 'rng-stack');
+  // ── Shared layout builder: result up top, actions below; className sets the
+  //    wrapper class (rng-cards for horizontal row, rng-stack for vertical) ───
+  function buildLayout(className) {
+    const face = el('div', className);
     const result = buildResult();
     const actions = el('div', 'rng-actions');
     for (const btn of buildButtons(result)) actions.appendChild(btn);
@@ -126,7 +117,7 @@ function makeRandomizer() {
     const layout = root.closest('.window')?.dataset.layout || 'cards';
     if (layout === currentLayout) return;
     currentLayout = layout;
-    root.replaceChildren(layout === 'stack' ? buildStack() : buildCards());
+    root.replaceChildren(buildLayout(layout === 'stack' ? 'rng-stack' : 'rng-cards'));
   }
 
   // First paint immediately (defaults to cards while detached), then again once
