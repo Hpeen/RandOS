@@ -263,6 +263,17 @@
     if (chance(0.6)) g.appendChild(px(9, 2, R.accent2, { cls: 'pxi-twinkle' }));
   }
 
+  function drawQuote(g, R) {
+    // A speech bubble with two big quotation marks.
+    g.appendChild(px(1, 2, R.ink, { w: 10, h: 7, rx: 1.5 }));  // bubble
+    g.appendChild(px(3, 9, R.ink, { w: 2, h: 2 }));            // tail
+    g.appendChild(px(2, 3, R.panel, { w: 8, h: 5, rx: 1 }));   // inner
+    g.appendChild(px(3, 4, R.accent, { w: 1, h: 2 }));         // left quote
+    g.appendChild(px(4, 4, R.accent, { w: 1, h: 2 }));
+    g.appendChild(px(7, 4, R.accent2, { w: 1, h: 2, cls: 'pxi-blink' })); // right quote
+    g.appendChild(px(8, 4, R.accent2, { w: 1, h: 2 }));
+  }
+
   const BUILDERS = {
     calculator: drawCalculator,
     clock: drawClock,
@@ -272,7 +283,8 @@
     dice: drawDice,
     coin: drawCoin,
     soundboard: drawSoundboard,
-    suggestionbox: drawSuggestionbox
+    suggestionbox: drawSuggestionbox,
+    quote: drawQuote
   };
 
   // Per-icon ambient motion class on the wrapper (gentle bob / sway).
@@ -285,7 +297,8 @@
     dice: 'pxi-bob',
     coin: '',           // coin flips via inner <g>
     soundboard: 'pxi-bob',
-    suggestionbox: ''   // the slip animates itself
+    suggestionbox: '',  // the slip animates itself
+    quote: 'pxi-sway'
   };
 
   // makePixelIcon(name, opts) -> SVG element (an animated pixel-art icon).
