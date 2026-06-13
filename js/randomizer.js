@@ -110,7 +110,7 @@ const POOLS = {
 const REQUIRED_TOKENS = ['palette', 'font', 'radius', 'shadow', 'chrome', 'layout'];
 
 // Pick one entry from an array, uniformly at random.
-function pick(arr) {
+function randPick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
@@ -119,12 +119,12 @@ function pick(arr) {
 function rollSkin(appName) {
   const layoutPool = POOLS.layout[appName] || POOLS.layout.default;
   return {
-    palette: pick(POOLS.palette),
-    font:    pick(POOLS.font),
-    radius:  pick(POOLS.radius),
-    shadow:  pick(POOLS.shadow),
-    chrome:  pick(POOLS.chrome),
-    layout:  pick(layoutPool)
+    palette: randPick(POOLS.palette),
+    font:    randPick(POOLS.font),
+    radius:  randPick(POOLS.radius),
+    shadow:  randPick(POOLS.shadow),
+    chrome:  randPick(POOLS.chrome),
+    layout:  randPick(layoutPool)
   };
 }
 
