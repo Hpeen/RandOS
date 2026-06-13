@@ -1234,6 +1234,27 @@ body {
   }
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   Sound Board app
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.soundboard { display: flex; flex-direction: column; height: 100%; gap: 10px; }
+.sb-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sb-title { font-family: var(--rand-font-head); font-weight: 700; }
+.sb-surprise { padding: 6px 12px; border: none; border-radius: var(--rand-radius, 8px);
+  background: var(--rand-accent); color: var(--rand-accent-text, #fff); cursor: pointer; }
+.sb-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; flex: 1;
+  overflow: auto; }
+.sb-pad { display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+  gap: 2px; padding: 10px 12px; border: 2px solid var(--rand-accent-2, #28e0c8);
+  border-radius: var(--rand-radius, 8px); background: var(--rand-surface);
+  color: var(--rand-text); cursor: pointer; transition: transform .08s ease; }
+.sb-pad-label { font-weight: 700; }
+.sb-pad-cat { font-size: 11px; opacity: .65; }
+.sb-pad.is-hit { animation: sb-hit .25s ease; }
+@keyframes sb-hit { 0% { transform: scale(.92); background: var(--rand-accent); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .sb-pad.is-hit { animation: none; } }
+
 /* ── Chaos heads-up banner ──────────────────────────────────────────────────
    Shown ~3.5s before the periodic CHAOS EVENT rerolls everything, so the user
    is warned. Pinned near the top-center, on-theme via --rand-accent, and

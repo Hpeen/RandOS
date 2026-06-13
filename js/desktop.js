@@ -9,7 +9,8 @@ const APPS = [
   { name: 'calculator', title: 'Calculator', size: { w: 340, h: 480 }, factory: () => makeCalculator() },
   { name: 'clock',      title: 'Clock',      size: { w: 380, h: 380 }, factory: () => makeClock() },
   { name: 'calendar',   title: 'Calendar',   size: { w: 360, h: 420 }, factory: () => makeCalendar() },
-  { name: 'randomizer', title: 'Randomizer', size: { w: 380, h: 440 }, factory: () => makeRandomizer() }
+  { name: 'randomizer', title: 'Randomizer', size: { w: 380, h: 440 }, factory: () => makeRandomizer() },
+  { name: 'soundboard', title: 'Sound Board', size: { w: 440, h: 440 }, factory: () => makeSoundboard() }
 ];
 
 function rollWallpaper() {
