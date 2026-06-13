@@ -12,6 +12,7 @@ const APPS = [
   { name: 'randomizer', title: 'Randomizer', size: { w: 380, h: 440 }, factory: () => makeRandomizer() },
   { name: 'soundboard', title: 'Sound Board', size: { w: 440, h: 440 }, factory: () => makeSoundboard() },
   { name: 'suggestionbox', title: 'Suggestion Box', size: { w: 360, h: 420 }, factory: () => makeSuggestionBox() },
+  { name: 'quote', title: 'Quote of the Session', size: { w: 440, h: 300 }, factory: () => makeQuote() },
 ];
 
 function rollWallpaper() {

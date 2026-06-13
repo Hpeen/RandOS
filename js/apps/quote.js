@@ -26,6 +26,43 @@ function pickQuote(list, rng) {
   return list[i];
 }
 
+// makeQuote() -> root element. Picks a fresh quote on open; "Another" rerolls.
+function makeQuote() {
+  const root = document.createElement('div');
+  root.className = 'quote-app';
+
+  const mark = document.createElement('div');
+  mark.className = 'quote-mark';
+  mark.textContent = '“'; // left double quote (not an emoji)
+
+  const text = document.createElement('blockquote');
+  text.className = 'quote-text';
+  const by = document.createElement('cite');
+  by.className = 'quote-by';
+  const tag = document.createElement('span');
+  tag.className = 'quote-kind';
+
+  const again = document.createElement('button');
+  again.type = 'button';
+  again.className = 'quote-again';
+  again.textContent = 'Another';
+
+  function show() {
+    const q = pickQuote(QUOTES, Math.random);
+    text.textContent = q.text;
+    by.textContent = '— ' + q.by; // em dash + attribution
+    tag.textContent = q.kind;
+    tag.dataset.kind = q.kind;
+  }
+  again.addEventListener('click', show);
+  show(); // fresh quote on every open
+
+  root.append(mark, text, by, tag, again);
+  return root;
+}
+
+if (typeof window !== 'undefined') window.makeQuote = makeQuote;
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { QUOTES: QUOTES, pickQuote: pickQuote };
 }
