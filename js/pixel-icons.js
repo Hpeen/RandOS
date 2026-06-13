@@ -254,6 +254,15 @@
     }
   }
 
+  function drawSuggestionbox(g, R) {
+    // A small box with a lid lifted at an angle and a slip peeking out.
+    g.appendChild(px(2, 6, R.ink, { w: 8, h: 5, rx: 0.5 }));   // box body
+    g.appendChild(px(3, 7, R.panel, { w: 6, h: 3 }));          // box inner
+    g.appendChild(px(4, 3, R.accent2, { w: 4, h: 3, cls: 'pxi-bob' })); // slip
+    g.appendChild(px(2, 5, R.accent, { w: 9, h: 1, rx: 0.5 })); // lid (tilted feel)
+    if (chance(0.6)) g.appendChild(px(9, 2, R.accent2, { cls: 'pxi-twinkle' }));
+  }
+
   const BUILDERS = {
     calculator: drawCalculator,
     clock: drawClock,
@@ -262,7 +271,8 @@
     shuffle: drawShuffle,
     dice: drawDice,
     coin: drawCoin,
-    soundboard: drawSoundboard
+    soundboard: drawSoundboard,
+    suggestionbox: drawSuggestionbox
   };
 
   // Per-icon ambient motion class on the wrapper (gentle bob / sway).
@@ -274,7 +284,8 @@
     shuffle: '',        // arrows nudge via inner <g>
     dice: 'pxi-bob',
     coin: '',           // coin flips via inner <g>
-    soundboard: 'pxi-bob'
+    soundboard: 'pxi-bob',
+    suggestionbox: ''   // the slip animates itself
   };
 
   // makePixelIcon(name, opts) -> SVG element (an animated pixel-art icon).
