@@ -488,3 +488,154 @@ body {
   letter-spacing: 0.24em;
   text-transform: uppercase;
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Randomizer app — RandOS's on-theme signature
+   Three actions (Coin / Dice / 1–100) feed a shared result area that pops on
+   every outcome. JS builds the matching DOM (.rng-cards or .rng-stack) per the
+   window's data-layout (cards | stack); these rules dress each arrangement in
+   the window's scoped --rand-* custom properties.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.rng {
+  font-family: var(--rand-font-body);
+  color: var(--rand-text);
+}
+.rng-cards,
+.rng-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Result area: contextual tag + big headline outcome on an inset panel ── */
+.rng-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 22px 20px;
+  background: var(--rand-bg);
+  border-radius: calc(var(--rand-radius) * 0.5);
+  box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.22);
+  text-align: center;
+}
+.rng-result-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--rand-accent);
+  opacity: 0.85;
+}
+.rng-result-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transform-origin: center;
+}
+.rng-result-glyph {
+  font-size: 56px;
+  line-height: 1;
+  filter: drop-shadow(0 3px 10px color-mix(in srgb, var(--rand-accent) 45%, transparent));
+}
+.rng-result-glyph.is-hidden { display: none; }
+.rng-result-value {
+  font-family: var(--rand-font-head);
+  font-size: 52px;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--rand-accent) 35%, transparent);
+}
+
+/* The satisfying reveal: a quick pop with a touch of spin, accent glow flash.
+   JS re-adds .is-revealing after a forced reflow so it restarts every roll. */
+.rng-result-display.is-revealing {
+  animation: rngPop 460ms cubic-bezier(0.2, 1.5, 0.45, 1) both;
+}
+@keyframes rngPop {
+  0%   { transform: scale(0.55) rotate(-12deg); opacity: 0; }
+  55%  { transform: scale(1.12) rotate(4deg);   opacity: 1; }
+  100% { transform: scale(1)    rotate(0deg);   opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rng-result-display.is-revealing {
+    animation: rngFade 200ms ease both;
+  }
+  @keyframes rngFade { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* ── Action buttons: accent fills with accent-text, shared by both layouts ── */
+.rng-actions { display: flex; gap: 10px; }
+.rng-action {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--rand-accent);
+  color: var(--rand-accent-text);
+  border: none;
+  border-radius: calc(var(--rand-radius) * 0.45);
+  font-family: var(--rand-font-body);
+  cursor: pointer;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--rand-accent) 40%, transparent);
+  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+.rng-action-glyph { font-size: 22px; line-height: 1; }
+.rng-action-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+.rng-action-label {
+  font-family: var(--rand-font-head);
+  font-size: 15px;
+  font-weight: 700;
+}
+.rng-action-name {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.78;
+}
+.rng-action:hover {
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--rand-accent) 55%, transparent);
+}
+.rng-action:active { transform: translateY(0) scale(0.97); }
+.rng-action:focus-visible {
+  outline: 2px solid var(--rand-accent-2);
+  outline-offset: 2px;
+}
+
+/* ── Cards layout: roomy panel, the three actions as a horizontal row ── */
+.window[data-layout="cards"] .rng-cards {
+  width: 320px;
+  gap: 16px;
+}
+.window[data-layout="cards"] .rng-actions {
+  flex-direction: row;
+}
+.window[data-layout="cards"] .rng-action {
+  flex-direction: column;
+  text-align: center;
+  gap: 6px;
+}
+.window[data-layout="cards"] .rng-action-text { align-items: center; }
+.window[data-layout="cards"] .rng-action-glyph { font-size: 26px; }
+
+/* ── Stack layout: narrow column, actions stacked as full-width rows ── */
+.window[data-layout="stack"] .rng-stack {
+  width: 234px;
+  gap: 12px;
+}
+.window[data-layout="stack"] .rng-actions {
+  flex-direction: column;
+}
+.window[data-layout="stack"] .rng-result { padding: 14px 18px 16px; }
+.window[data-layout="stack"] .rng-result-glyph { font-size: 46px; }
+.window[data-layout="stack"] .rng-result-value { font-size: 42px; }
+.window[data-layout="stack"] .rng-action { width: 100%; }
