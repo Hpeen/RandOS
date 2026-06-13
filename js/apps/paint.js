@@ -48,7 +48,7 @@ function makePaint() {
 
   function paintCell(px_, py, b) {
     ctx.fillStyle = b.color;
-    const half = Math.floor(b.size / 2);
+    const half = b.size - 1;   // size 1->1x1, 2->3x3, 3->5x5, 4->7x7
     for (let dx = -half; dx <= half; dx++) {
       for (let dy = -half; dy <= half; dy++) {
         ctx.fillRect((px_ + dx) * CELL, (py + dy) * CELL, CELL, CELL);
@@ -66,7 +66,13 @@ function makePaint() {
   let drawing = false;
   canvas.addEventListener('mousedown', (e) => { drawing = true; const c = cellFromEvent(e); paintCell(c.x, c.y, brush); });
   canvas.addEventListener('mousemove', (e) => { if (!drawing) return; const c = cellFromEvent(e); paintCell(c.x, c.y, brush); });
-  window.addEventListener('mouseup', () => { drawing = false; });
+  function onWindowMouseUp() {
+    drawing = false;
+    // The window manager just calls win.remove() on close (no teardown hook),
+    // so self-remove this window-level listener once our canvas is detached.
+    if (!canvas.isConnected) window.removeEventListener('mouseup', onWindowMouseUp);
+  }
+  window.addEventListener('mouseup', onWindowMouseUp);
   clearBtn.addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
 
   function alive() { return document.body && document.body.contains(root); }
