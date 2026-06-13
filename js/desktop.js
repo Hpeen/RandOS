@@ -14,6 +14,7 @@ const APPS = [
   { name: 'suggestionbox', title: 'Suggestion Box', size: { w: 360, h: 420 }, factory: () => makeSuggestionBox() },
   { name: 'quote', title: 'Quote of the Session', size: { w: 440, h: 300 }, factory: () => makeQuote() },
   { name: 'spinner', title: 'Spinner', size: { w: 460, h: 520 }, factory: () => makeSpinner() },
+  { name: 'notepad', title: 'Notepad', size: { w: 420, h: 460 }, factory: () => makeNotepad() },
 ];
 
 function rollWallpaper() {

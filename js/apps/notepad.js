@@ -28,6 +28,78 @@ function chaoticAutocorrect(text, rng) {
   return words.join('');
 }
 
+// makeNotepad() -> root element. A contenteditable note with two chaos streaks:
+//   - autocorrect: on a timer, swaps one word for a wrong one (chaoticAutocorrect)
+//   - restyle: on a timer, wraps one random word in an inline span with a
+//     random font/size/color (suppressed under reduced motion)
+// A "Calm" toggle stops all chaos. Timers self-clear when the window is removed.
+function makeNotepad() {
+  const root = document.createElement('div');
+  root.className = 'notepad';
+
+  const bar = document.createElement('div');
+  bar.className = 'np-bar';
+  const calm = document.createElement('button');
+  calm.type = 'button';
+  calm.className = 'np-calm';
+  calm.textContent = 'Calm: OFF';
+  const note = document.createElement('div');
+  note.className = 'np-note';
+  note.contentEditable = 'true';
+  note.spellcheck = false;
+  note.textContent = 'Type here. This notepad gets a little chaotic... the and you file please.';
+  bar.appendChild(calm);
+  root.append(bar, note);
+
+  let calmOn = false;
+  calm.addEventListener('click', () => {
+    calmOn = !calmOn;
+    calm.textContent = 'Calm: ' + (calmOn ? 'ON' : 'OFF');
+  });
+
+  function reduced() { return window.FX && window.FX.reducedMotion && window.FX.reducedMotion(); }
+  function alive() { return document.body && document.body.contains(root); }
+
+  const FONTS = ['Georgia, serif', "'Comic Sans MS', cursive", 'Impact, sans-serif', 'monospace'];
+  const COLORS = ['var(--rand-accent)', 'var(--rand-accent-2)', '#ff4d4d', '#ffd166'];
+
+  // Autocorrect tick: swap one word in the live text. Preserves caret-less edit
+  // by only acting when the note is NOT focused (so we never fight the typist).
+  const acTimer = setInterval(() => {
+    if (!alive()) { clearInterval(acTimer); return; }
+    if (calmOn || document.activeElement === note) return;
+    const before = note.textContent;
+    const after = chaoticAutocorrect(before, Math.random);
+    if (after !== before) note.textContent = after;
+  }, 4200);
+
+  // Restyle tick: wrap one random word in a styled span (cosmetic only).
+  const rsTimer = setInterval(() => {
+    if (!alive()) { clearInterval(rsTimer); return; }
+    if (calmOn || reduced() || document.activeElement === note) return;
+    const words = note.textContent.split(' ');
+    if (words.length < 2) return;
+    const i = Math.floor(Math.random() * words.length);
+    const span = document.createElement('span');
+    span.className = 'np-wild';
+    span.style.fontFamily = FONTS[Math.floor(Math.random() * FONTS.length)];
+    span.style.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    span.style.fontSize = (0.8 + Math.random() * 1.2).toFixed(2) + 'em';
+    span.textContent = words[i] + ' ';
+    words[i] = ' '; // placeholder
+    // Rebuild as text + the one styled span (keeps it simple + safe, no innerHTML).
+    note.textContent = '';
+    words.forEach((w, idx) => {
+      if (w === ' ') { note.appendChild(span); }
+      else note.appendChild(document.createTextNode(w + (idx < words.length - 1 ? ' ' : '')));
+    });
+  }, 5300);
+
+  return root;
+}
+
+if (typeof window !== 'undefined') window.makeNotepad = makeNotepad;
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { SWAPS: SWAPS, chaoticAutocorrect: chaoticAutocorrect };
 }
