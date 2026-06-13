@@ -60,8 +60,7 @@ function makeSpinner() {
     const cs = getComputedStyle(root);
     const a = cs.getPropertyValue('--rand-accent').trim() || '#ff4d9d';
     const b = cs.getPropertyValue('--rand-accent-2').trim() || '#28e0c8';
-    const s = cs.getPropertyValue('--rand-surface').trim() || '#1d1933';
-    return [a, b, s];
+    return [a, b];
   }
 
   function draw() {
@@ -100,6 +99,7 @@ function makeSpinner() {
   function spin() {
     if (spinning) return;
     spinning = true;
+    spinBtn.disabled = true;
     result.textContent = '...';
     const reduced = window.FX && window.FX.reducedMotion && window.FX.reducedMotion();
     const turns = reduced ? 0 : 4 + Math.floor(Math.random() * 4);
@@ -109,6 +109,7 @@ function makeSpinner() {
     const start = performance.now();
     const from = angle;
     function frame(now) {
+      if (!canvas.isConnected) { spinning = false; spinBtn.disabled = false; return; }
       const t = Math.min(1, (now - start) / dur);
       const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
       angle = from + (target - from) * eased;
@@ -116,6 +117,7 @@ function makeSpinner() {
       if (t < 1) { requestAnimationFrame(frame); }
       else {
         spinning = false;
+        spinBtn.disabled = false;
         const idx = winnerForAngle(slots.length, angle);
         result.textContent = 'Winner: ' + slots[idx];
         if (window.FX) {
