@@ -7,8 +7,18 @@ const APPS = [
 ];
 
 function rollWallpaper() {
-  const skin = rollSkin('default');
-  const p = skin.palette;
+  // The animated generative canvas (js/wallpaper.js) is the star. It rolls its
+  // own palette + a random pattern type on every call and (re)starts a single
+  // animation loop, cleanly tearing down any previous one.
+  let p = null;
+  if (typeof rollWallpaperCanvas === 'function') {
+    p = rollWallpaperCanvas();
+  }
+  // Fallback / base wash under the canvas (also covers the first paint before
+  // the canvas has drawn, and any environment without the wallpaper module).
+  if (!p) {
+    p = rollSkin('default').palette;
+  }
   document.documentElement.style.setProperty(
     '--wall-bg',
     `linear-gradient(135deg, ${p.bg}, ${p.surface})`

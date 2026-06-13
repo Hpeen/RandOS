@@ -9,6 +9,18 @@ body {
   position: fixed; inset: 0;
   background: var(--wall-bg);
 }
+/* Animated generative wallpaper (js/wallpaper.js). Sits BEHIND #icons,
+   #taskbar and all windows, and never intercepts pointer events so the
+   desktop stays fully clickable. The --wall-bg gradient shows through as a
+   base wash on first paint and as a graceful fallback. */
+#wallpaper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+}
+#icons, #taskbar { z-index: 1; }
 #icons {
   position: absolute; top: 16px; left: 16px;
   display: flex; flex-direction: column; gap: 14px;
