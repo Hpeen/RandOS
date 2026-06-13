@@ -1,9 +1,9 @@
 // desktop.js — boots shell: wallpaper, launcher icons, global theme shuffle.
 const APPS = [
-  { name: 'calculator', title: 'Calculator', glyph: '🧮', factory: () => makeCalculator() },
-  { name: 'clock',      title: 'Clock',      glyph: '🕐', factory: () => makeClock() },
-  { name: 'calendar',   title: 'Calendar',   glyph: '📅', factory: () => makeCalendar() },
-  { name: 'randomizer', title: 'Randomizer', glyph: '🎲', factory: () => makeRandomizer() }
+  { name: 'calculator', title: 'Calculator', factory: () => makeCalculator() },
+  { name: 'clock',      title: 'Clock',      factory: () => makeClock() },
+  { name: 'calendar',   title: 'Calendar',   factory: () => makeCalendar() },
+  { name: 'randomizer', title: 'Randomizer', factory: () => makeRandomizer() }
 ];
 
 function rollWallpaper() {
@@ -22,7 +22,12 @@ function buildIcons() {
   for (const app of APPS) {
     const el = document.createElement('div');
     el.className = 'app-icon';
-    el.innerHTML = `<span class="glyph">${app.glyph}</span>${app.title}`;
+    const icon = makePixelIcon(app.name, { size: 40 });
+    icon.classList.add('glyph');
+    const label = document.createElement('span');
+    label.className = 'app-label';
+    label.textContent = app.title;
+    el.append(icon, label);
     el.addEventListener('dblclick', () => launch(app));
     icons.appendChild(el);
   }
@@ -36,14 +41,18 @@ function launch(app) {
     contentEl = document.createElement('div');
     contentEl.textContent = `${app.title} crashed: ${err.message}`;
   }
-  openWindow({ title: app.title, glyph: app.glyph, appName: app.name, contentEl });
+  openWindow({ title: app.title, appName: app.name, contentEl });
 }
 
 function buildShuffle() {
   const taskbar = document.getElementById('taskbar');
   const btn = document.createElement('button');
   btn.className = 'shuffle-btn';
-  btn.textContent = '🎲 Shuffle theme';
+  const icon = makePixelIcon('shuffle', { size: 18 });
+  icon.classList.add('shuffle-btn-icon');
+  const label = document.createElement('span');
+  label.textContent = 'Shuffle theme';
+  btn.append(icon, label);
   btn.addEventListener('click', rollWallpaper);
   taskbar.appendChild(btn);
 }

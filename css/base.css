@@ -18,7 +18,8 @@ body {
   color: #fff; font-size: 13px; user-select: none;
   text-shadow: 0 1px 4px rgba(0,0,0,0.6);
 }
-.app-icon .glyph { font-size: 34px; display: block; }
+.app-icon .glyph { display: block; margin: 0 auto 4px; }
+.app-icon .app-label { display: block; }
 #taskbar {
   position: absolute; bottom: 0; left: 0; right: 0; height: 46px;
   display: flex; align-items: center; gap: 8px; padding: 0 10px;
@@ -29,6 +30,10 @@ body {
   background: rgba(255,255,255,0.12); color: #fff; border: none;
   padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;
 }
+.shuffle-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.shuffle-btn-icon { flex: 0 0 auto; }
 .window {
   position: absolute; min-width: 240px;
   background: var(--rand-surface); color: var(--rand-text);
@@ -43,6 +48,7 @@ body {
   font-family: var(--rand-font-head);
 }
 .window-title .title-text { flex: 1; font-size: 14px; }
+.window-title-icon { flex: 0 0 auto; }
 .window-close {
   border: none; background: rgba(0,0,0,0.25); color: var(--rand-accent-text, #fff);
   width: 22px; height: 22px; border-radius: 6px; cursor: pointer;
@@ -639,3 +645,95 @@ body {
 .window[data-layout="stack"] .rng-result-glyph { font-size: 46px; }
 .window[data-layout="stack"] .rng-result-value { font-size: 42px; }
 .window[data-layout="stack"] .rng-action { width: 100%; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Pixel-art icon system (js/pixel-icons.js)
+   Crisp SVG-rect sprites that recolor with the inherited scoped --rand-*
+   vars. Each icon keeps a recognizable silhouette but randomizes a few
+   detail pixels per render, and a short CSS loop keeps it subtly alive.
+   All motion is gated behind prefers-reduced-motion: reduce.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.pxi {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: visible;
+  /* Keep edges razor-sharp even when scaled. */
+  shape-rendering: crispEdges;
+  image-rendering: pixelated;
+}
+
+/* The randomizer result area renders a large pixel icon; give it room and a
+   soft accent drop-shadow to match the old glyph's presence. */
+.rng-result-glyph .pxi {
+  filter: drop-shadow(0 3px 10px color-mix(in srgb, var(--rand-accent) 45%, transparent));
+}
+
+/* ── Ambient wrapper motion ── */
+.pxi-bob  { animation: pxiBob 2.6s ease-in-out infinite; }
+.pxi-sway { animation: pxiSway 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
+
+@keyframes pxiBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-1.5px); }
+}
+@keyframes pxiSway {
+  0%, 100% { transform: rotate(-3deg); }
+  50%      { transform: rotate(3deg); }
+}
+
+/* ── Detail-pixel animations ── */
+.pxi-blink    { animation: pxiBlink 1.4s steps(1) infinite; }
+.pxi-blink2   { animation: pxiBlink 1.9s steps(1) infinite 0.4s; }
+.pxi-twinkle  { animation: pxiTwinkle 1.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.pxi-twinkle2 { animation: pxiTwinkle 2.4s ease-in-out infinite 0.6s; transform-box: fill-box; transform-origin: center; }
+.pxi-shimmer  { animation: pxiShimmer 2.8s ease-in-out infinite; }
+
+@keyframes pxiBlink {
+  0%, 60%  { opacity: 1; }
+  61%, 100% { opacity: 0.15; }
+}
+@keyframes pxiTwinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.6); }
+  50%      { opacity: 1;    transform: scale(1.15); }
+}
+@keyframes pxiShimmer {
+  0%, 70%, 100% { opacity: 0; }
+  82%           { opacity: 0.35; }
+}
+
+/* ── Clock hands ── */
+.pxi-hand-hour,
+.pxi-hand-min,
+.pxi-hand-sec { transform-box: fill-box; transform-origin: 50% 100%; }
+.pxi-clockhands .pxi-hand-hour { transform: rotate(var(--pxi-hour, 0deg)); }
+.pxi-clockhands .pxi-hand-min  { transform: rotate(var(--pxi-min, 90deg)); }
+.pxi-clockhands .pxi-hand-sec  { animation: pxiSpin 6s linear infinite; }
+@keyframes pxiSpin { to { transform: rotate(360deg); } }
+
+/* ── Shuffle arrows: a gentle swap nudge ── */
+.pxi-shuffle { animation: pxiSwap 2.2s ease-in-out infinite; transform-box: view-box; transform-origin: center; }
+@keyframes pxiSwap {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(0.6px); }
+  75%      { transform: translateX(-0.6px); }
+}
+
+/* ── Coin: slow flip-bob ── */
+.pxi-coin { animation: pxiCoin 3.4s ease-in-out infinite; transform-box: view-box; transform-origin: center; }
+@keyframes pxiCoin {
+  0%, 100% { transform: scaleX(1)    translateY(0); }
+  45%      { transform: scaleX(0.82) translateY(-1px); }
+  50%      { transform: scaleX(0.65) translateY(-1.5px); }
+  55%      { transform: scaleX(0.82) translateY(-1px); }
+}
+
+/* Calm everything when the user prefers reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .pxi,
+  .pxi * {
+    animation: none !important;
+  }
+  /* Keep clock hands at their rolled position (no spin), still readable. */
+  .pxi-clockhands .pxi-hand-sec { transform: rotate(180deg); }
+}

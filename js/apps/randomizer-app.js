@@ -3,7 +3,8 @@
 // makeRandomizer() builds and returns the randomizer's root DOM element. Three
 // actions — Coin flip (Heads/Tails), Dice roll (1–6), Random 1–100 — each feed
 // a shared result area that plays a brief, satisfying reveal animation on every
-// outcome (even a repeat value: we yank the animation class, force a reflow,
+// outcome — a value plus a matching animated pixel-art icon (coin face / die
+// face). Even a repeat value re-fires: we yank the animation class, force a reflow,
 // then re-add it). The window manager wraps us in a freshly-skinned .window and
 // assigns data-layout (cards | stack) AFTER this factory returns, so the layout
 // is resolved lazily inside render() and the arrangement is rebuilt only when
@@ -17,30 +18,35 @@ function makeRandomizer() {
   const root = document.createElement('div');
   root.className = 'rng';
 
-  const DICE_FACES = '⚀⚁⚂⚃⚄⚅'; // index 0–5 maps to a roll of 1–6
-
-  // The three actions. roll() returns { value, glyph } — value is the headline
-  // text, glyph an optional oversized symbol (the die pip face).
+  // The three actions. roll() returns { value, icon } — value is the headline
+  // text; icon is an optional descriptor { name, opts } turned into a pixel-art
+  // icon at reveal time (the result area shows the value AND the matching icon).
   const ACTIONS = [
     {
-      label: 'Coin', glyph: '🪙', name: 'Flip',
+      label: 'Coin', name: 'Flip',
       roll() {
-        const heads = Math.random() < 0.5;
-        return { value: heads ? 'Heads' : 'Tails', glyph: heads ? '👑' : '🪙' };
+        const heads = Math.random() < 0.5; // 50/50
+        return {
+          value: heads ? 'Heads' : 'Tails',
+          icon: { name: 'coin', opts: { face: heads ? 'heads' : 'tails', size: 64 } }
+        };
       }
     },
     {
-      label: 'Dice', glyph: '🎲', name: 'Roll',
+      label: 'Dice', name: 'Roll',
       roll() {
-        const n = Math.floor(Math.random() * 6); // 0–5, never out of pip range
-        return { value: String(n + 1), glyph: DICE_FACES[n] };
+        const rolled = 1 + Math.floor(Math.random() * 6); // 1–6 inclusive
+        return {
+          value: String(rolled),
+          icon: { name: 'dice', opts: { value: rolled, size: 64 } }
+        };
       }
     },
     {
-      label: '1–100', glyph: '🔢', name: 'Pick',
+      label: '1–100', name: 'Pick',
       roll() {
         const n = 1 + Math.floor(Math.random() * 100); // 1–100 inclusive
-        return { value: String(n), glyph: null };
+        return { value: String(n), icon: null };
       }
     }
   ];
@@ -64,11 +70,12 @@ function makeRandomizer() {
 
     function show(action, outcome) {
       tag.textContent = action.label;
-      if (outcome.glyph) {
-        glyph.textContent = outcome.glyph;
+      if (outcome.icon && typeof makePixelIcon === 'function') {
+        const node = makePixelIcon(outcome.icon.name, outcome.icon.opts);
+        glyph.replaceChildren(node);
         glyph.classList.remove('is-hidden');
       } else {
-        glyph.textContent = '';
+        glyph.replaceChildren();
         glyph.classList.add('is-hidden');
       }
       value.textContent = outcome.value;
@@ -88,12 +95,11 @@ function makeRandomizer() {
     return ACTIONS.map((action) => {
       const btn = el('button', 'rng-action');
       btn.type = 'button';
-      const glyph = el('span', 'rng-action-glyph', action.glyph);
       const label = el('span', 'rng-action-label', action.label);
       const name = el('span', 'rng-action-name', action.name);
       const text = el('span', 'rng-action-text');
       text.append(label, name);
-      btn.append(glyph, text);
+      btn.append(text);
       btn.addEventListener('click', () => result.show(action, action.roll()));
       return btn;
     });

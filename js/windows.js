@@ -2,8 +2,8 @@
 let zCounter = 100;
 let offsetSeed = 0;
 
-// openWindow({ title, glyph, appName, contentEl }) -> windowEl
-function openWindow({ title, glyph, appName, contentEl }) {
+// openWindow({ title, appName, contentEl }) -> windowEl
+function openWindow({ title, appName, contentEl }) {
   const desktop = document.getElementById('desktop');
   if (desktop === null) return null;
   const win = document.createElement('div');
@@ -21,7 +21,17 @@ function openWindow({ title, glyph, appName, contentEl }) {
 
   const bar = document.createElement('div');
   bar.className = 'window-title';
-  bar.innerHTML = `<span class="title-text">${glyph ? glyph + ' ' : ''}${title}</span>`;
+  // Pixel-art app icon (sits on the accent fill, so onAccent for contrast),
+  // followed by the title text. Built as element nodes, no innerHTML.
+  if (appName && typeof makePixelIcon === 'function') {
+    const icon = makePixelIcon(appName, { size: 16, onAccent: true });
+    icon.classList.add('window-title-icon');
+    bar.appendChild(icon);
+  }
+  const titleText = document.createElement('span');
+  titleText.className = 'title-text';
+  titleText.textContent = title;
+  bar.appendChild(titleText);
   const close = document.createElement('button');
   close.className = 'window-close';
   close.textContent = '×';

@@ -1,7 +1,8 @@
-# RandOS 
+# RandOS
 A web desktop where nothing looks the same twice. Every app re-rolls its design
-from curated pools each time you open it. May be colorful, occasionally monochrome,
-but always readable.
+from curated pools each time you open it — including hand-built animated pixel-art
+icons that vary on every render. May be colorful, occasionally monochrome, but
+always readable.
 
 ## Run locally
 Double-click `index.html`, or serve the folder (`npx serve` / VS Code Live Server).
