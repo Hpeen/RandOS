@@ -994,69 +994,64 @@ body {
 }
 
 .boot-jib { display: block; overflow: visible; }
+/* Pixel display font (matches the pixel-art jack). Press Start 2P is chunky and
+   wide, so sizes/letter-spacing are dialled down vs a normal face; monospace is
+   the fallback if the font is blocked. */
 .boot-wordmark {
-  font-family: var(--rand-font-head);
-  font-size: 30px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-indent: 0.18em;
+  font-family: 'Press Start 2P', ui-monospace, 'Courier New', monospace;
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
   color: color-mix(in srgb, var(--rand-accent) 40%, #ffffff);
+  text-shadow: 0 3px 0 color-mix(in srgb, var(--rand-accent) 55%, #14141f);
   opacity: 0;
 }
 .boot-tagline {
-  font-family: var(--rand-font-head);
-  font-size: 13px;
-  letter-spacing: 0.34em;
-  text-indent: 0.34em;             /* re-center the tracked-out caps */
+  font-family: 'Press Start 2P', ui-monospace, 'Courier New', monospace;
+  font-size: 9px;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--rand-accent) 60%, #ffffff);
   opacity: 0;
 }
 
-/* ── Shared SVG part styling ── */
-/* Box */
-.jib-box-body  { fill: color-mix(in srgb, var(--rand-accent) 30%, #2a2a3c); }
-.jib-box-edge  { fill: none; stroke: color-mix(in srgb, var(--rand-accent) 70%, #ffffff); stroke-width: 3.5; }
-.jib-box-panel { fill: color-mix(in srgb, var(--rand-accent) 18%, #1b1b27); }
-.jib-box-inset { fill: color-mix(in srgb, var(--rand-accent) 12%, #16161f); stroke: color-mix(in srgb, var(--rand-accent) 40%, transparent); stroke-width: 1.5; }
-.jib-box-seam  { stroke: color-mix(in srgb, var(--rand-accent) 55%, transparent); stroke-width: 2; }
-.jib-grain     { fill: none; stroke: color-mix(in srgb, var(--rand-accent) 35%, transparent); stroke-width: 1.5; stroke-linecap: round; }
-.jib-bolt      { fill: color-mix(in srgb, var(--rand-accent) 85%, #ffffff); stroke: #14141f; stroke-width: 1; }
-/* Lid */
-.jib-lid-top   { fill: color-mix(in srgb, var(--rand-accent) 42%, #2a2a3c); stroke: color-mix(in srgb, var(--rand-accent) 70%, #ffffff); stroke-width: 3.5; }
-.jib-lid-trim  { fill: color-mix(in srgb, var(--rand-accent) 60%, #ffffff); }
-/* Crank */
-.jib-crank-arm     { stroke: color-mix(in srgb, var(--rand-accent) 75%, #ffffff); stroke-width: 6; stroke-linecap: round; }
-.jib-crank-knob    { fill: var(--rand-accent-2); stroke: color-mix(in srgb, var(--rand-accent) 80%, #ffffff); stroke-width: 2; }
-.jib-crank-pin     { fill: #14141f; }
-.jib-crank-hub     { fill: color-mix(in srgb, var(--rand-accent) 80%, #ffffff); }
-.jib-crank-hub-pin { fill: #14141f; }
+/* ── Pixel-art part styling (js/boot-jib.js renders rect-per-cell sprites) ──
+   Crisp pixels; hues routed through the live theme so each boot is on-theme,
+   while the face/cheeks/mouth keep classic clown colors. */
+#boot-jib rect { shape-rendering: crispEdges; }
 
-/* Jack character */
-.jib-coil  { fill: none; stroke: var(--rand-accent-2); stroke-width: 7; stroke-linecap: round; }
-.jib-collar { fill: color-mix(in srgb, var(--rand-accent-2) 55%, #ffffff); }
-.jib-torso { fill: color-mix(in srgb, var(--rand-accent) 38%, #2a2a3c); stroke: var(--rand-accent-2); stroke-width: 2.5; }
-.jib-button { fill: var(--rand-accent-2); }
-.jib-arm   { fill: none; stroke: color-mix(in srgb, var(--rand-accent) 50%, #2a2a3c); stroke-width: 8; stroke-linecap: round; }
-.jib-hand  { fill: color-mix(in srgb, var(--rand-accent-2) 50%, #ffffff); stroke: var(--rand-accent-2); stroke-width: 2; }
-.jib-hat-a { fill: var(--rand-accent); }
-.jib-hat-b { fill: color-mix(in srgb, var(--rand-accent) 14%, #fbf7ff); }
-.jib-hat-c { fill: var(--rand-accent-2); }
-.jib-hat-outline { fill: none; stroke: color-mix(in srgb, var(--rand-accent) 70%, #14141f); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
-.jib-hat-brim { fill: color-mix(in srgb, var(--rand-accent-2) 50%, #ffffff); stroke: color-mix(in srgb, var(--rand-accent) 50%, #14141f); stroke-width: 1.5; }
-.jib-pompom { fill: color-mix(in srgb, var(--rand-accent-2) 60%, #ffffff); stroke: #14141f; stroke-width: 1; }
-.jib-pompom-hi { fill: #ffffff; opacity: 0.8; }
-.jib-head-disc { fill: color-mix(in srgb, var(--rand-accent) 12%, #fdf9ff); }
-.jib-head-shade { fill: color-mix(in srgb, var(--rand-accent) 22%, #2a2a3c); opacity: 0.5; }
-.jib-head-ring { fill: none; stroke: var(--rand-accent-2); stroke-width: 3.5; }
-.jib-cheek { fill: color-mix(in srgb, var(--rand-accent) 45%, #ff9bbf); opacity: 0.7; }
-.jib-eye-white { fill: #ffffff; stroke: #2a2a3c; stroke-width: 1; }
-.jib-pupil { fill: #14141f; }
-.jib-glint { fill: #ffffff; }
-.jib-brow  { fill: none; stroke: #2a2a3c; stroke-width: 3; stroke-linecap: round; }
-.jib-nose  { fill: #e23b2e; stroke: #8c1f17; stroke-width: 1; }
-.jib-nose-hi { fill: #ffffff; opacity: 0.75; }
-.jib-smile { fill: #b03050; stroke: #2a2a3c; stroke-width: 2.5; stroke-linejoin: round; }
+.j-out      { fill: #14141f; }                                              /* outline */
+/* Jester hat */
+.j-hat      { fill: var(--rand-accent); }
+.j-hat-s    { fill: color-mix(in srgb, var(--rand-accent) 58%, #14141f); }   /* hat shade */
+.j-band     { fill: color-mix(in srgb, var(--rand-accent) 42%, #14141f); }   /* hat band */
+.j-pom      { fill: var(--rand-accent-2); }                                  /* pompom */
+.j-pom-s    { fill: color-mix(in srgb, var(--rand-accent-2) 55%, #14141f); }
+/* Face */
+.j-face     { fill: #f7ead8; }
+.j-cheek    { fill: #ff9bbf; }
+.j-eye      { fill: var(--rand-accent-2); }                                  /* star (+) eyes */
+.j-mouth    { fill: #b3243f; }
+.j-teeth    { fill: #fff7ef; }
+.j-collar   { fill: color-mix(in srgb, var(--rand-accent-2) 70%, #ffffff); }
+.j-collar-s { fill: color-mix(in srgb, var(--rand-accent-2) 50%, #14141f); }
+/* Coil */
+.j-coil-w   { fill: #f3f4ff; }
+.j-coil     { fill: var(--rand-accent-2); }
+.j-coil-s   { fill: color-mix(in srgb, var(--rand-accent-2) 55%, #14141f); }
+/* Box */
+.j-box      { fill: var(--rand-accent); }
+.j-box-s    { fill: color-mix(in srgb, var(--rand-accent) 62%, #14141f); }   /* box shade */
+.j-box-l    { fill: color-mix(in srgb, var(--rand-accent) 55%, #ffffff); }   /* trim */
+.j-star     { fill: var(--rand-accent-2); }
+/* Lid */
+.j-lid      { fill: var(--rand-accent); }
+.j-lid-l    { fill: color-mix(in srgb, var(--rand-accent) 55%, #ffffff); }
+/* Crank */
+.j-metal    { fill: color-mix(in srgb, var(--rand-accent) 28%, #d8d8e4); }
+.j-metal-d  { fill: #2a2a3c; }
+.j-knob     { fill: var(--rand-accent-2); }
 
 /* ── Playing state: orchestrated keyframe sequence ──
    Timeline (boot.js safety net is 6.4s; reveal waits for the swing to finish):
@@ -1101,8 +1096,9 @@ body {
 .boot-playing .jib-jack {
   transform-box: fill-box;
   transform-origin: 50% 100%;
-  /* Hidden in the box until the pop. */
-  transform: translateY(150px) scale(0.62);
+  /* Hidden down inside the box until the pop (the tall pixel jack tucks behind
+     the box front; bottom-centre origin keeps it anchored at the opening). */
+  transform: translateY(60px) scale(0.22);
   opacity: 0;
   /* Promote to its own compositor layer so the complex SVG group isn't repainted
      every frame as it springs (the main cause of the stutter). Linear base so the
@@ -1150,13 +1146,12 @@ body {
    Per-keyframe timing functions (ease-out on the up-swings, ease-in on the
    down-swings) make the motion read as a natural spring rather than a jerk. */
 @keyframes jibPop {
-  0%   { transform: translateY(150px) scale(0.62); opacity: 0; animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1); }
-  12%  { transform: translateY(150px) scale(0.62); opacity: 1; animation-timing-function: cubic-bezier(0.18, 0.6, 0.3, 1); }
-  42%  { transform: translateY(-36px) scale(1.06); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
-  58%  { transform: translateY(7px)   scale(0.985); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
-  72%  { transform: translateY(-13px) scale(1.022); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
-  84%  { transform: translateY(4px)   scale(0.994); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
-  93%  { transform: translateY(-2px)  scale(1.006); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
+  0%   { transform: translateY(60px) scale(0.22); opacity: 0; animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1); }
+  12%  { transform: translateY(60px) scale(0.22); opacity: 1; animation-timing-function: cubic-bezier(0.16, 0.65, 0.3, 1); }
+  46%  { transform: translateY(-26px) scale(1.05); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
+  62%  { transform: translateY(8px)   scale(0.985); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
+  76%  { transform: translateY(-10px) scale(1.02); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
+  88%  { transform: translateY(3px)   scale(0.995); animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1); }
   100% { transform: translateY(0)     scale(1); opacity: 1; }
 }
 

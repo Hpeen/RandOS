@@ -125,8 +125,8 @@
       return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     }
     var r = svg.getBoundingClientRect();
-    // Lid opening is near the top of the box in the 320x360 viewBox (~y 204/360).
-    return { x: r.left + r.width * 0.5, y: r.top + r.height * 0.57 };
+    // Box opening sits ~2/3 down the 440x560 viewBox (box top ~y 372/560).
+    return { x: r.left + r.width * 0.5, y: r.top + r.height * 0.66 };
   }
 
   // Boot-local confetti: spawn short-lived absolutely-positioned shards INSIDE
