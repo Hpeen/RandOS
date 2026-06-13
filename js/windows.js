@@ -204,8 +204,11 @@ function makeDraggable(win, handle) {
     originX = win.offsetLeft; originY = win.offsetTop;
     // Cosmetic "grabbed" tilt/scale. Position still moves via left/top, so the
     // drag math is untouched. Drop any leftover open animation class first so
-    // the two transforms don't fight on the same element.
+    // the two transforms don't fight on the same element. Also drop is-rebox so
+    // grabbing a window mid-teleport (chaos event) drags instantly, not sluggishly.
     win.classList.remove('is-opening');
+    win.classList.remove('is-rebox');
+    if (win._reboxTimer) { clearTimeout(win._reboxTimer); win._reboxTimer = null; }
     win.classList.add('is-dragging');
     e.preventDefault();
   }
@@ -244,12 +247,15 @@ if (typeof window !== 'undefined') {
   window.randomizeWindowBox = function randomizeWindowBox(el) {
     if (!el || !el.style) return;
     const box = rollWindowBox();
+    if (el._reboxTimer) { clearTimeout(el._reboxTimer); el._reboxTimer = null; }
     el.classList.add('is-rebox');
     applyWindowBox(el, box);
     // Drop the transition class after it plays so dragging stays instant. The
     // duration here matches the longest .is-rebox transition in css/base.css.
-    window.setTimeout(function () {
+    // Store the handle so a rapid second call doesn't strip the class mid-glide.
+    el._reboxTimer = window.setTimeout(function () {
       el.classList.remove('is-rebox');
+      el._reboxTimer = null;
     }, 420);
     return box;
   };
