@@ -238,6 +238,22 @@
     g.setAttribute('class', 'pxi-coin');
   }
 
+  function drawSoundboard(g, R) {
+    // A speaker cone on the left, animated sound waves on the right.
+    g.appendChild(px(2, 4, R.ink, { w: 2, h: 4 }));           // speaker neck
+    g.appendChild(px(3, 2, R.ink, { w: 2, h: 8, rx: 0.5 }));  // cone
+    g.appendChild(px(4, 3, R.panel, { w: 1, h: 6 }));         // cone face
+    // Sound-wave arcs that pulse; randomize how many show.
+    const waves = 1 + randInt(3);
+    for (let k = 0; k < waves; k++) {
+      const x = 6 + k * 2;
+      const h = 4 - k;
+      g.appendChild(px(x, 6 - h / 2, k === 0 ? R.accent : R.accent2, {
+        w: 1, h: Math.max(1, h), cls: 'pxi-blink' + (k % 2 ? '2' : '')
+      }));
+    }
+  }
+
   const BUILDERS = {
     calculator: drawCalculator,
     clock: drawClock,
@@ -245,7 +261,8 @@
     randomizer: drawRandomizer,
     shuffle: drawShuffle,
     dice: drawDice,
-    coin: drawCoin
+    coin: drawCoin,
+    soundboard: drawSoundboard
   };
 
   // Per-icon ambient motion class on the wrapper (gentle bob / sway).
@@ -256,7 +273,8 @@
     randomizer: 'pxi-sway',
     shuffle: '',        // arrows nudge via inner <g>
     dice: 'pxi-bob',
-    coin: ''            // coin flips via inner <g>
+    coin: '',           // coin flips via inner <g>
+    soundboard: 'pxi-bob'
   };
 
   // makePixelIcon(name, opts) -> SVG element (an animated pixel-art icon).
