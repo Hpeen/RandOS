@@ -146,5 +146,8 @@
     </div>
   </div>
   <script src="js/boot.js"></script>
+  <!-- Loaded LAST so every global it drives (rollWallpaper, rollCursor,
+       getOpenWindows, randomizeWindowBox, rollSkin/applySkin, FX) already exists. -->
+  <script src="js/chaos.js"></script>
 </body>
 </html>
