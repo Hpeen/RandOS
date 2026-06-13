@@ -102,25 +102,122 @@
     return;
   }
 
-  // ── Full animation. The wind-up / lid / pop are CSS @keyframes (see
-  // base.css); JS just kicks it off, listens for the pop to finish, and keeps
-  // a safety net so the user is never trapped. ──
+  // ── Full animation. The wind-up / shiver / lid / pop are CSS @keyframes (see
+  // base.css); JS just kicks it off, fires particle bursts at the key beats,
+  // listens for the pop to finish, and keeps a safety net so the user is never
+  // trapped. ──
   overlay.classList.add('boot-playing');
   attachSkip();
 
-  // The orchestrated sequence total (crank wind-up -> lid flip -> jack pop ->
-  // settle) is ~2.9s; reveal a touch after it lands. The animationend on the
-  // jack's pop is the primary trigger; the timer is the guaranteed backstop.
+  // Particle helpers. FX is window.FX (js/particles.js, loaded earlier); it may
+  // be absent in odd loads, so every call is guarded. FX itself honors
+  // reduced-motion, but we also gate here so reduced-motion boots stay calm.
+  function fx() { return (typeof window !== 'undefined') ? window.FX : null; }
+
+  // Where the box opening sits on screen — used to aim the pop burst. The FX
+  // canvas is BEHIND #boot (z 9000 < 9999), so a pop burst there is hidden by
+  // the overlay; we fire it anyway so a faint glow shows around the edges, and
+  // rely on the celebratory rain at REVEAL (over the live desktop) as the
+  // headline effect. We also add boot-local confetti DOM for the in-overlay pop.
+  function boxOpeningPoint() {
+    var svg = overlay.querySelector('.boot-jib');
+    if (!svg || !svg.getBoundingClientRect) {
+      return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    }
+    var r = svg.getBoundingClientRect();
+    // Lid opening is near the top of the box in the 320x360 viewBox (~y 204/360).
+    return { x: r.left + r.width * 0.5, y: r.top + r.height * 0.57 };
+  }
+
+  // Boot-local confetti: spawn short-lived absolutely-positioned shards INSIDE
+  // #boot so the burst is visible ON TOP of the boot scene (the FX canvas is
+  // behind the overlay). Pure DOM + CSS, no emoji. Cleaned up on reveal/teardown
+  // when #boot is removed, and skipped under reduced motion.
+  function localPop() {
+    if (prefersReduced) { return; }
+    var stage = overlay.querySelector('.boot-stage');
+    if (!stage) { return; }
+    var layer = document.createElement('div');
+    layer.className = 'boot-confetti';
+    var n = 26 + ((Math.random() * 14) | 0);
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('span');
+      s.className = 'boot-shard';
+      var dx = (Math.random() * 260 - 130).toFixed(0);
+      var dy = (-90 - Math.random() * 150).toFixed(0);
+      var rot = (Math.random() * 720 - 360).toFixed(0);
+      var dur = (0.7 + Math.random() * 0.6).toFixed(2);
+      var delay = (Math.random() * 0.12).toFixed(2);
+      s.style.setProperty('--dx', dx + 'px');
+      s.style.setProperty('--dy', dy + 'px');
+      s.style.setProperty('--rot', rot + 'deg');
+      s.style.setProperty('--dur', dur + 's');
+      s.style.setProperty('--delay', delay + 's');
+      s.style.setProperty('--hue', (Math.random() * 360).toFixed(0) + 'deg');
+      layer.appendChild(s);
+    }
+    stage.appendChild(layer);
+  }
+
+  // Burst at the POP moment: boot-local confetti (visible over the scene) plus
+  // an FX burst at the opening (varied, random) for extra sparkle at the edges.
+  function popEffect() {
+    localPop();
+    if (prefersReduced) { return; }
+    var f = fx();
+    if (f && typeof f.burst === 'function') {
+      var p = boxOpeningPoint();
+      f.burst(p.x, p.y, { count: 30 + ((Math.random() * 24) | 0), spread: Math.PI * 1.5, speed: 320 });
+    }
+  }
+
+  // Celebratory effect at REVEAL: confetti rains over the now-visible desktop,
+  // with a couple of random bursts for variety. All guarded by reduced-motion.
+  function revealEffect() {
+    if (prefersReduced) { return; }
+    var f = fx();
+    if (!f) { return; }
+    if (typeof f.confettiRain === 'function') { f.confettiRain({ duration: 2400 }); }
+    if (typeof f.burstRandom === 'function') {
+      var w = window.innerWidth, h = window.innerHeight;
+      f.burstRandom(w * (0.25 + Math.random() * 0.1), h * 0.4);
+      f.burstRandom(w * (0.65 + Math.random() * 0.1), h * 0.4);
+    }
+  }
+
+  // Pop burst is time-driven so it fires right as the jack clears the lid
+  // (~2.55s delay + ~0.30s rise). Independent of the reveal path.
+  var popTimer = setTimeout(popEffect, 2850);
+
+  // Wrap reveal ONCE: clear the pending pop burst (if we're skipping early) and
+  // fire the celebratory reveal effect, then run the original reveal/teardown.
+  // The `done` guard inside baseReveal keeps this idempotent across skip +
+  // natural completion. skipHandler calls reveal() at invocation time, so this
+  // reassignment is picked up even though attachSkip() ran earlier.
+  var baseReveal = reveal;
+  reveal = function () {
+    if (done) { return; }                 // idempotent: matches baseReveal guard
+    if (popTimer) { clearTimeout(popTimer); popTimer = null; }
+    revealEffect();
+    baseReveal();
+  };
+
+  // The orchestrated sequence: crank wind-up -> box shiver -> lid flip ->
+  // jack pop (ends ~3.70s) -> settle wobble (~5.15s). The animationend on the
+  // jack's pop is the primary reveal trigger; the timer is the guaranteed
+  // backstop.
   var jack = overlay.querySelector('.jib-jack');
   if (jack) {
     jack.addEventListener('animationend', function (ev) {
       if (ev.animationName === 'jibPop') {
         // Small hold so the landed jack is readable before the reveal.
-        setTimeout(reveal, 520);
+        setTimeout(reveal, 680);
       }
     });
   }
 
-  // Hard safety net: overlay is ALWAYS gone by this point no matter what.
-  safetyTimer = setTimeout(reveal, 4200);
+  // Hard safety net: overlay is ALWAYS gone by this point no matter what. The
+  // longest natural path is pop-end (~3.70s) + 0.68s hold = ~4.38s reveal; this
+  // 5.6s backstop comfortably exceeds it so the user is never trapped.
+  safetyTimer = setTimeout(reveal, 5600);
 })();

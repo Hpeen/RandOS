@@ -926,128 +926,211 @@ body {
 }
 
 .boot-jib { display: block; overflow: visible; }
+.boot-wordmark {
+  font-family: var(--rand-font-head);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-indent: 0.18em;
+  color: color-mix(in srgb, var(--rand-accent) 40%, #ffffff);
+  opacity: 0;
+}
 .boot-tagline {
   font-family: var(--rand-font-head);
-  font-size: 22px;
-  letter-spacing: 0.42em;
-  text-indent: 0.42em;             /* re-center the tracked-out caps */
+  font-size: 13px;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;             /* re-center the tracked-out caps */
   text-transform: uppercase;
   color: color-mix(in srgb, var(--rand-accent) 60%, #ffffff);
   opacity: 0;
 }
 
 /* ── Shared SVG part styling ── */
+/* Box */
 .jib-box-body  { fill: color-mix(in srgb, var(--rand-accent) 30%, #2a2a3c); }
-.jib-box-edge  { fill: none; stroke: color-mix(in srgb, var(--rand-accent) 70%, #ffffff); stroke-width: 3; }
-.jib-box-panel { fill: color-mix(in srgb, var(--rand-accent) 16%, #1b1b27); }
+.jib-box-edge  { fill: none; stroke: color-mix(in srgb, var(--rand-accent) 70%, #ffffff); stroke-width: 3.5; }
+.jib-box-panel { fill: color-mix(in srgb, var(--rand-accent) 18%, #1b1b27); }
+.jib-box-inset { fill: color-mix(in srgb, var(--rand-accent) 12%, #16161f); stroke: color-mix(in srgb, var(--rand-accent) 40%, transparent); stroke-width: 1.5; }
 .jib-box-seam  { stroke: color-mix(in srgb, var(--rand-accent) 55%, transparent); stroke-width: 2; }
-.jib-lid-top   { fill: color-mix(in srgb, var(--rand-accent) 42%, #2a2a3c); stroke: color-mix(in srgb, var(--rand-accent) 70%, #ffffff); stroke-width: 3; }
+.jib-grain     { fill: none; stroke: color-mix(in srgb, var(--rand-accent) 35%, transparent); stroke-width: 1.5; stroke-linecap: round; }
+.jib-bolt      { fill: color-mix(in srgb, var(--rand-accent) 85%, #ffffff); stroke: #14141f; stroke-width: 1; }
+/* Lid */
+.jib-lid-top   { fill: color-mix(in srgb, var(--rand-accent) 42%, #2a2a3c); stroke: color-mix(in srgb, var(--rand-accent) 70%, #ffffff); stroke-width: 3.5; }
+.jib-lid-trim  { fill: color-mix(in srgb, var(--rand-accent) 60%, #ffffff); }
+/* Crank */
+.jib-crank-arm     { stroke: color-mix(in srgb, var(--rand-accent) 75%, #ffffff); stroke-width: 6; stroke-linecap: round; }
+.jib-crank-knob    { fill: var(--rand-accent-2); stroke: color-mix(in srgb, var(--rand-accent) 80%, #ffffff); stroke-width: 2; }
+.jib-crank-pin     { fill: #14141f; }
+.jib-crank-hub     { fill: color-mix(in srgb, var(--rand-accent) 80%, #ffffff); }
+.jib-crank-hub-pin { fill: #14141f; }
 
-.jib-crank-arm { stroke: color-mix(in srgb, var(--rand-accent) 75%, #ffffff); stroke-width: 5; stroke-linecap: round; }
-.jib-crank-knob { fill: var(--rand-accent-2); }
-.jib-crank-hub  { fill: color-mix(in srgb, var(--rand-accent) 80%, #ffffff); }
-
-.jib-coil { fill: none; stroke: var(--rand-accent-2); stroke-width: 6; stroke-linecap: round; }
-.jib-head-disc { fill: color-mix(in srgb, var(--rand-accent) 28%, #2a2a3c); }
+/* Jack character */
+.jib-coil  { fill: none; stroke: var(--rand-accent-2); stroke-width: 7; stroke-linecap: round; }
+.jib-collar { fill: color-mix(in srgb, var(--rand-accent-2) 55%, #ffffff); }
+.jib-torso { fill: color-mix(in srgb, var(--rand-accent) 38%, #2a2a3c); stroke: var(--rand-accent-2); stroke-width: 2.5; }
+.jib-button { fill: var(--rand-accent-2); }
+.jib-arm   { fill: none; stroke: color-mix(in srgb, var(--rand-accent) 50%, #2a2a3c); stroke-width: 8; stroke-linecap: round; }
+.jib-hand  { fill: color-mix(in srgb, var(--rand-accent-2) 50%, #ffffff); stroke: var(--rand-accent-2); stroke-width: 2; }
+.jib-hat-flop { fill: var(--rand-accent-2); }
+.jib-hat-band { fill: color-mix(in srgb, var(--rand-accent) 55%, #ffffff); }
+.jib-bell  { fill: color-mix(in srgb, var(--rand-accent) 85%, #ffffff); stroke: #14141f; stroke-width: 1; }
+.jib-head-disc { fill: color-mix(in srgb, var(--rand-accent) 26%, #f3f0fb); }
+.jib-head-shade { fill: color-mix(in srgb, var(--rand-accent) 22%, #2a2a3c); opacity: 0.5; }
 .jib-head-ring { fill: none; stroke: var(--rand-accent-2); stroke-width: 3.5; }
-.jib-eye   { fill: #ffffff; }
-.jib-smile { fill: none; stroke: #ffffff; stroke-width: 3; stroke-linecap: round; }
-.jib-mark  {
-  fill: color-mix(in srgb, var(--rand-accent) 35%, #ffffff);
-  font-family: var(--rand-font-head);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
+.jib-cheek { fill: color-mix(in srgb, var(--rand-accent) 45%, #ff9bbf); opacity: 0.7; }
+.jib-eye-white { fill: #ffffff; stroke: #2a2a3c; stroke-width: 1; }
+.jib-pupil { fill: #14141f; }
+.jib-glint { fill: #ffffff; }
+.jib-brow  { fill: none; stroke: #2a2a3c; stroke-width: 3; stroke-linecap: round; }
+.jib-nose  { fill: color-mix(in srgb, var(--rand-accent) 40%, #ff6f9c); }
+.jib-smile { fill: #b03050; stroke: #2a2a3c; stroke-width: 2.5; stroke-linejoin: round; }
 
 /* ── Playing state: orchestrated keyframe sequence ──
-   Timeline (boot.js safety net is 4.2s):
-     0.0–1.6s  crank winds up (accelerating jiggle = building tension)
-     1.55s     lid flips open
-     1.7s      jack springs out on the coil (overshoot + settle) -> jibPop
-     0.0s+     tagline fades up underneath
+   Lengthened, richer timeline (boot.js safety net is 5.6s):
+     0.00–2.30s  crank winds up (6 turns, accelerating = mounting tension)
+     2.10–2.40s  anticipation: box shivers/recoils just before the burst
+     2.40s       lid flips open
+     2.55s       jack springs out on the coil (big overshoot + settle) -> jibPop
+     3.55s       friendly head wobble settles
+     3.20s+      wordmark + tagline fade up underneath
 */
+.boot-playing .jib-box {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: jibShiver 0.32s ease-in-out 2.12s both;
+}
 .boot-playing .jib-crank {
   transform-box: fill-box;
   transform-origin: 0% 50%;           /* pivot at the hub (left end of arm) */
-  animation: jibWind 1.6s cubic-bezier(0.5, 0, 0.85, 0.3) both;
+  animation: jibWind 2.3s cubic-bezier(0.45, 0, 0.85, 0.35) both;
 }
 .boot-playing .jib-lid {
   transform-box: fill-box;
   transform-origin: 0% 100%;          /* hinge at back-left */
-  animation: jibLid 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) 1.55s both;
+  animation: jibLid 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) 2.40s both;
 }
 .boot-playing .jib-jack {
   transform-box: fill-box;
   transform-origin: 50% 100%;
   /* Hidden in the box until the pop. */
-  transform: translateY(118px) scale(0.6);
+  transform: translateY(150px) scale(0.55);
   opacity: 0;
-  animation: jibPop 1.05s cubic-bezier(0.2, 1.5, 0.4, 1) 1.7s both;
+  animation: jibPop 1.15s cubic-bezier(0.2, 1.55, 0.4, 1) 2.55s both;
 }
 .boot-playing .jib-head {
   transform-box: fill-box;
   transform-origin: 50% 100%;
-  animation: jibWobble 1.4s ease-in-out 2.6s both;
+  animation: jibWobble 1.6s ease-in-out 3.55s both;
+}
+.boot-playing .boot-wordmark {
+  animation: jibTagline 0.6s ease 3.20s both;
 }
 .boot-playing .boot-tagline {
-  animation: jibTagline 0.6s ease 2.3s both;
+  animation: jibTagline 0.6s ease 3.45s both;
 }
 
 /* Crank wind-up: full rotations that speed up, conveying mounting tension. */
 @keyframes jibWind {
   0%   { transform: rotate(0deg); }
-  100% { transform: rotate(1440deg); }   /* 4 turns, eased to accelerate */
+  100% { transform: rotate(2160deg); }   /* 6 turns, eased to accelerate */
+}
+
+/* Anticipation: the box recoils/shivers a beat before the jack bursts out. */
+@keyframes jibShiver {
+  0%, 100% { transform: translateX(0) scale(1); }
+  20% { transform: translateX(-2px) scale(1.01, 0.99); }
+  45% { transform: translateX(3px)  scale(0.99, 1.02); }
+  70% { transform: translateX(-2px) scale(1.01, 0.99); }
 }
 
 /* Lid flips open and back like a hinged trapdoor flung by the pop. */
 @keyframes jibLid {
   0%   { transform: rotate(0deg); }
-  60%  { transform: rotate(-118deg); }
-  100% { transform: rotate(-104deg); }
+  60%  { transform: rotate(-122deg); }
+  100% { transform: rotate(-106deg); }
 }
 
-/* The pop: jack launches up out of the box, overshoots, then settles. */
+/* The pop: jack launches up out of the box, overshoots big, then settles. */
 @keyframes jibPop {
-  0%   { transform: translateY(118px) scale(0.6);  opacity: 0; }
-  35%  { transform: translateY(-26px) scale(1.12); opacity: 1; }
-  60%  { transform: translateY(8px)   scale(0.96); opacity: 1; }
-  80%  { transform: translateY(-6px)  scale(1.02); opacity: 1; }
+  0%   { transform: translateY(150px) scale(0.55); opacity: 0; }
+  18%  { transform: translateY(150px) scale(0.55); opacity: 1; }
+  40%  { transform: translateY(-34px) scale(1.14); opacity: 1; }
+  62%  { transform: translateY(10px)  scale(0.95); opacity: 1; }
+  80%  { transform: translateY(-7px)  scale(1.03); opacity: 1; }
+  92%  { transform: translateY(3px)   scale(0.99); opacity: 1; }
   100% { transform: translateY(0)     scale(1);    opacity: 1; }
 }
 
 /* A friendly post-landing head wobble on the coil. */
 @keyframes jibWobble {
   0%, 100% { transform: rotate(0deg); }
-  25%      { transform: rotate(5deg); }
-  60%      { transform: rotate(-4deg); }
-  85%      { transform: rotate(2deg); }
+  20%      { transform: rotate(6deg); }
+  50%      { transform: rotate(-5deg); }
+  78%      { transform: rotate(3deg); }
 }
 
 @keyframes jibTagline {
   from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 0.9; transform: translateY(0); }
+  to   { opacity: 0.92; transform: translateY(0); }
 }
 
-/* ── Reduced motion: no winding, no springing. The jack/wordmark simply rests
-   already-out of the box, the tagline shows, then boot.js fades the overlay.
-   boot.js applies .boot-reduced instead of .boot-playing. ── */
+/* ── Boot-local confetti (the in-overlay pop burst) ──
+   boot.js injects a .boot-confetti layer of .boot-shard spans into .boot-stage
+   at the pop moment. These render INSIDE #boot (above the boot scene), unlike
+   the FX canvas which sits behind the overlay. Each shard's trajectory is set
+   via inline CSS custom props (--dx/--dy/--rot/--dur/--delay/--hue). Skipped
+   under reduced motion (boot.js never injects them then, and the keyframe is
+   neutralized below as a belt-and-braces). */
+.boot-confetti {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.boot-shard {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 9px;
+  height: 13px;
+  border-radius: 2px;
+  background: hsl(var(--hue) 85% 62%);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  animation: jibShard var(--dur, 1s) cubic-bezier(0.15, 0.7, 0.3, 1) var(--delay, 0s) forwards;
+}
+@keyframes jibShard {
+  0%   { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(0.6); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(1); }
+}
+
+/* ── Reduced motion: no winding, no springing. The jack character simply rests
+   already-out of the box, the wordmark/tagline show, then boot.js fades the
+   overlay. boot.js applies .boot-reduced instead of .boot-playing. ── */
+.boot-reduced .jib-box   { transform: none; }
 .boot-reduced .jib-crank { transform: none; }
 .boot-reduced .jib-jack  { transform: none; opacity: 1; }
 .boot-reduced .jib-lid {
   transform-box: fill-box;
   transform-origin: 0% 100%;
-  transform: rotate(-104deg);
+  transform: rotate(-106deg);
 }
-.boot-reduced .boot-tagline { opacity: 0.9; }
+.boot-reduced .boot-wordmark { opacity: 0.92; }
+.boot-reduced .boot-tagline  { opacity: 0.92; }
 
 @media (prefers-reduced-motion: reduce) {
   /* Hard stop on any boot keyframes that might otherwise be applied. */
+  .boot-playing .jib-box,
   .boot-playing .jib-crank,
   .boot-playing .jib-lid,
   .boot-playing .jib-jack,
   .boot-playing .jib-head,
+  .boot-playing .boot-wordmark,
   .boot-playing .boot-tagline,
+  .boot-shard,
   #boot * {
     animation: none !important;
   }
