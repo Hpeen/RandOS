@@ -13,6 +13,86 @@ function randomBrush(rng) {
   return { color: PALETTE[ci], size: size };
 }
 
+// makePaint() -> root element. A pixel grid you draw on; the brush color/size
+// randomizes periodically and stray pixels appear. Clear button resets. Timers
+// self-clear when the window is removed.
+function makePaint() {
+  const root = document.createElement('div');
+  root.className = 'paint-app';
+
+  const CELL = 12, COLS = 28, ROWS = 22;
+  const canvas = document.createElement('canvas');
+  canvas.width = COLS * CELL; canvas.height = ROWS * CELL;
+  canvas.className = 'paint-canvas';
+  const ctx = canvas.getContext('2d');
+
+  const bar = document.createElement('div');
+  bar.className = 'paint-bar';
+  const swatch = document.createElement('span');
+  swatch.className = 'paint-swatch';
+  const info = document.createElement('span');
+  info.className = 'paint-info';
+  const clearBtn = document.createElement('button');
+  clearBtn.type = 'button';
+  clearBtn.className = 'paint-clear';
+  clearBtn.textContent = 'Clear';
+  bar.append(swatch, info, clearBtn);
+  root.append(bar, canvas);
+
+  let brush = randomBrush(Math.random);
+  function showBrush() {
+    swatch.style.background = brush.color;
+    info.textContent = 'size ' + brush.size;
+  }
+  showBrush();
+
+  function paintCell(px_, py, b) {
+    ctx.fillStyle = b.color;
+    const half = Math.floor(b.size / 2);
+    for (let dx = -half; dx <= half; dx++) {
+      for (let dy = -half; dy <= half; dy++) {
+        ctx.fillRect((px_ + dx) * CELL, (py + dy) * CELL, CELL, CELL);
+      }
+    }
+  }
+  function cellFromEvent(e) {
+    const r = canvas.getBoundingClientRect();
+    return {
+      x: Math.floor((e.clientX - r.left) / CELL),
+      y: Math.floor((e.clientY - r.top) / CELL)
+    };
+  }
+
+  let drawing = false;
+  canvas.addEventListener('mousedown', (e) => { drawing = true; const c = cellFromEvent(e); paintCell(c.x, c.y, brush); });
+  canvas.addEventListener('mousemove', (e) => { if (!drawing) return; const c = cellFromEvent(e); paintCell(c.x, c.y, brush); });
+  window.addEventListener('mouseup', () => { drawing = false; });
+  clearBtn.addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
+
+  function alive() { return document.body && document.body.contains(root); }
+  function reduced() { return window.FX && window.FX.reducedMotion && window.FX.reducedMotion(); }
+
+  // Chaos: rebrush on you periodically.
+  const brushTimer = setInterval(() => {
+    if (!alive()) { clearInterval(brushTimer); return; }
+    brush = randomBrush(Math.random);
+    showBrush();
+  }, 3500);
+
+  // Chaos: a stray pixel appears somewhere (rarer under reduced motion).
+  const strayTimer = setInterval(() => {
+    if (!alive()) { clearInterval(strayTimer); return; }
+    if (reduced() && Math.random() < 0.7) return;
+    const sx = Math.floor(Math.random() * COLS);
+    const sy = Math.floor(Math.random() * ROWS);
+    paintCell(sx, sy, randomBrush(Math.random));
+  }, 2600);
+
+  return root;
+}
+
+if (typeof window !== 'undefined') window.makePaint = makePaint;
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { PALETTE: PALETTE, randomBrush: randomBrush };
 }

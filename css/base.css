@@ -1393,3 +1393,13 @@ body {
   background: var(--rand-surface); color: var(--rand-text); line-height: 1.5;
   outline: none; border: 1px solid color-mix(in srgb, var(--rand-text) 15%, transparent); }
 .np-wild { transition: all .2s ease; }
+
+.paint-app { display: flex; flex-direction: column; height: 100%; gap: 8px; }
+.paint-bar { display: flex; align-items: center; gap: 10px; }
+.paint-swatch { width: 22px; height: 22px; border-radius: 4px; border: 2px solid var(--rand-text); }
+.paint-info { font-size: 12px; opacity: .8; }
+.paint-clear { margin-left: auto; padding: 4px 12px; border: none; border-radius: var(--rand-radius, 8px);
+  background: var(--rand-accent); color: var(--rand-accent-text, #fff); cursor: pointer; }
+.paint-canvas { flex: 1; align-self: center; background: var(--rand-surface);
+  border-radius: var(--rand-radius, 8px); cursor: crosshair;
+  image-rendering: pixelated; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--rand-text) 15%, transparent); }
