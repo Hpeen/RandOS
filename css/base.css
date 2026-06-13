@@ -764,6 +764,11 @@ body {
   55%      { transform: scaleX(0.82) translateY(-1px); }
 }
 
+/* ── Spinner: slow continuous rotation ── */
+.pxi-spin { transform-origin: 50% 50%; animation: pxi-spin 6s linear infinite; }
+@keyframes pxi-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .pxi-spin { animation: none; } }
+
 /* Calm everything when the user prefers reduced motion. */
 @media (prefers-reduced-motion: reduce) {
   .pxi,

@@ -274,6 +274,18 @@
     g.appendChild(px(8, 4, R.accent2, { w: 1, h: 2 }));
   }
 
+  function drawSpinner(g, R) {
+    // A wheel quartered into colored wedges with a pointer at the top.
+    g.appendChild(px(2, 2, R.ink, { w: 8, h: 8, rx: 4, opacity: 0.4 })); // rim
+    g.appendChild(px(3, 3, R.accent, { w: 3, h: 3 }));
+    g.appendChild(px(6, 3, R.accent2, { w: 3, h: 3 }));
+    g.appendChild(px(3, 6, R.accent2, { w: 3, h: 3 }));
+    g.appendChild(px(6, 6, R.accent, { w: 3, h: 3 }));
+    g.appendChild(px(5, 5, R.ink, { w: 2, h: 2, rx: 1 }));   // hub
+    g.appendChild(px(5, 0, R.ink, { w: 2, h: 2 }));          // pointer
+    g.setAttribute('class', 'pxi-spin'); // slow rotate ambient
+  }
+
   const BUILDERS = {
     calculator: drawCalculator,
     clock: drawClock,
@@ -284,7 +296,8 @@
     coin: drawCoin,
     soundboard: drawSoundboard,
     suggestionbox: drawSuggestionbox,
-    quote: drawQuote
+    quote: drawQuote,
+    spinner: drawSpinner
   };
 
   // Per-icon ambient motion class on the wrapper (gentle bob / sway).
@@ -298,7 +311,8 @@
     coin: '',           // coin flips via inner <g>
     soundboard: 'pxi-bob',
     suggestionbox: '',  // the slip animates itself
-    quote: 'pxi-sway'
+    quote: 'pxi-sway',
+    spinner: ''         // rotates via inner <g> class
   };
 
   // makePixelIcon(name, opts) -> SVG element (an animated pixel-art icon).
