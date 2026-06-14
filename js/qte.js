@@ -1,4 +1,4 @@
-// qte.js — RandOS Quick-Time Events. Every ~90-150s (only when a window is open
+// qte.js — RandOS Quick-Time Events. Every ~30-60s (only when a window is open
 // and the tab is visible and nothing else holds the busy-lock) a mini-game pops
 // up with a strict timer. Success -> reward burst. Fail/ignore -> ALL open
 // windows force-close. Modeled on chaos.js: one re-armed setTimeout, never
@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  var MIN_MS = 90000, MAX_MS = 150000;
+  var MIN_MS = 30000, MAX_MS = 60000;
 
   // ── Pure outcome rule (tested) ──────────────────────────────────────────────
   // qteOutcome(hits, required, timedOut) -> 'success' | 'fail'.

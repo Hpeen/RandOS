@@ -63,14 +63,15 @@
 
     startHum();
 
-    // Defer binding the escape click so the triggering shuffle-click doesn't
+    // Make the visitor stew for 5 seconds before the escape click is armed —
+    // long enough to feel trapped, and so the triggering shuffle-click can't
     // instantly dismiss it.
     escTimer = setTimeout(function () {
       escTimer = null;
-      if (!active) return; // exit() was called during the 350ms window
+      if (!active) return; // exit() was called during the 5s window
       escHandler = function () { exit(); };
       document.addEventListener('click', escHandler, { once: true });
-    }, 350);
+    }, 5000);
   }
 
   function exit() {

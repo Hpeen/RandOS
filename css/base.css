@@ -1430,19 +1430,25 @@ body.backrooms { --wall-bg: #b9a82a; }
 body.backrooms #fx-layer { display: none; }
 body.backrooms::before {
   content: ''; position: fixed; inset: 0; z-index: 1;
-  background:
-    repeating-linear-gradient(0deg, #c9b733 0 38px, #b3a228 38px 40px),
-    repeating-linear-gradient(90deg, rgba(0,0,0,.05) 0 78px, rgba(0,0,0,.12) 78px 80px),
-    #c2b02e;
-  box-shadow: inset 0 0 200px rgba(80,70,0,.7);
-  animation: backrooms-flicker 6s steps(20) infinite;
+  background: #c2b02e url('../assets/backrooms.png') center / cover no-repeat;
+  box-shadow: inset 0 0 160px rgba(40,34,0,.55);
+  animation: backrooms-flicker 5s ease-in-out infinite;
   pointer-events: none;
 }
 body.backrooms .window { filter: sepia(.5) saturate(1.6) hue-rotate(-10deg); }
 .backrooms-prompt { position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%);
-  z-index: 9600; color: #fff7c2; font-family: monospace; letter-spacing: .1em; opacity: .8;
+  z-index: 9600; color: #fff7c2; font-family: monospace; font-size: 24px; letter-spacing: .1em; opacity: .8;
   text-shadow: 0 0 8px rgba(0,0,0,.6); animation: backrooms-pulse 2s ease-in-out infinite; }
-@keyframes backrooms-flicker { 0%,100% { opacity: 1; } 47% { opacity: .96; } 48% { opacity: .8; } 49% { opacity: 1; } 92% { opacity: .9; } }
+@keyframes backrooms-flicker {
+  0%, 100% { filter: brightness(1); }
+  48% { filter: brightness(1); }
+  49% { filter: brightness(.8); }
+  50% { filter: brightness(1.04); }
+  51% { filter: brightness(.86); }
+  52% { filter: brightness(1); }
+  92% { filter: brightness(.92); }
+  93% { filter: brightness(1); }
+}
 @keyframes backrooms-pulse { 0%,100% { opacity: .55; } 50% { opacity: .9; } }
 body.backrooms.backrooms-calm::before { animation: none; }
 @media (prefers-reduced-motion: reduce) {
