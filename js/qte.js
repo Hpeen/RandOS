@@ -61,10 +61,31 @@
     {
       required: 4, ms: 5000, instruction: 'Click the GREEN dots, avoid red!',
       build: function (host, onHit) {
-        for (var i = 0; i < 9; i++) {
-          (function () {
+        // Guarantee at least `required` (4) green dots so the challenge is
+        // always solvable. Start with a random 55%-green distribution, then
+        // flip enough randomly-chosen red slots to green if we fall short.
+        var REQUIRED = 4; // mirrors challenge.required
+        var greens = [];
+        var i;
+        for (i = 0; i < 9; i++) {
+          greens.push(Math.random() < 0.55);
+        }
+        var greenCount = 0;
+        for (i = 0; i < 9; i++) { if (greens[i]) greenCount++; }
+        if (greenCount < REQUIRED) {
+          // Collect red indices and shuffle them so flips are random.
+          var reds = [];
+          for (i = 0; i < 9; i++) { if (!greens[i]) reds.push(i); }
+          for (i = reds.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = reds[i]; reds[i] = reds[j]; reds[j] = tmp;
+          }
+          var needed = REQUIRED - greenCount;
+          for (i = 0; i < needed; i++) { greens[reds[i]] = true; }
+        }
+        for (i = 0; i < 9; i++) {
+          (function (green) {
             var d = document.createElement('button');
-            var green = Math.random() < 0.55;
             d.className = 'qte-grid-dot ' + (green ? 'is-green' : 'is-red');
             d.addEventListener('click', function () {
               if (d.disabled) return;
@@ -72,7 +93,7 @@
               else { d.classList.add('is-bad'); }
             });
             host.appendChild(d);
-          })();
+          })(greens[i]);
         }
       }
     }
@@ -87,7 +108,6 @@
 
     var overlay = document.createElement('div');
     overlay.className = 'qte-overlay';
-    if (reduced()) overlay.classList.add('is-calm');
 
     var panel = document.createElement('div');
     panel.className = 'qte-panel';
