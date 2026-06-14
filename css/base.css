@@ -1403,3 +1403,25 @@ body {
 .paint-canvas { flex: 1; align-self: center; background: var(--rand-surface);
   border-radius: var(--rand-radius, 8px); cursor: crosshair;
   image-rendering: pixelated; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--rand-text) 15%, transparent); }
+
+.qte-overlay { position: fixed; inset: 0; z-index: 9500; display: flex; align-items: center;
+  justify-content: center; background: rgba(0,0,0,.45); animation: qte-in .2s ease; }
+.qte-panel { width: min(440px, 90vw); background: var(--wall-bg, #1d1933); color: #fff;
+  border: 3px solid var(--rand-accent, #ff4d9d); border-radius: 14px; padding: 18px;
+  box-shadow: 0 16px 48px rgba(0,0,0,.5); text-align: center; }
+.qte-title { font-family: var(--rand-font-head, system-ui); font-size: 20px; font-weight: 800; }
+.qte-score { margin: 6px 0; font-size: 16px; opacity: .9; }
+.qte-bar-wrap { height: 10px; background: rgba(255,255,255,.18); border-radius: 6px; overflow: hidden; }
+.qte-bar { height: 100%; background: var(--rand-accent, #ff4d9d); transform-origin: left center; transform: scaleX(1); }
+.qte-arena { position: relative; height: 220px; margin-top: 12px; }
+.qte-dot { position: absolute; width: 40px; height: 40px; border-radius: 50%; border: none;
+  background: var(--rand-accent-2, #28e0c8); cursor: pointer; }
+.qte-mash { width: 140px; height: 140px; border-radius: 50%; border: none; margin: 30px auto 0;
+  display: block; background: var(--rand-accent, #ff4d9d); color: #fff; font-size: 22px; font-weight: 900; cursor: pointer; }
+.qte-arena { display: grid; grid-template-columns: repeat(3, 1fr); place-content: center; }
+.qte-grid-dot { width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer; margin: 6px; }
+.qte-grid-dot.is-green { background: #2ecc71; } .qte-grid-dot.is-red { background: #e74c3c; }
+.qte-grid-dot.is-got { opacity: .35; } .qte-grid-dot.is-bad { outline: 3px solid #fff; }
+.qte-panel.is-win { border-color: #2ecc71; } .qte-panel.is-lose { border-color: #e74c3c; }
+@keyframes qte-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .qte-overlay { animation: none; } }
