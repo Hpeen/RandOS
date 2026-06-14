@@ -238,6 +238,81 @@
     g.setAttribute('class', 'pxi-coin');
   }
 
+  function drawSoundboard(g, R) {
+    // A speaker cone on the left, animated sound waves on the right.
+    g.appendChild(px(2, 4, R.ink, { w: 2, h: 4 }));           // speaker neck
+    g.appendChild(px(3, 2, R.ink, { w: 2, h: 8, rx: 0.5 }));  // cone
+    g.appendChild(px(4, 3, R.panel, { w: 1, h: 6 }));         // cone face
+    // Sound-wave arcs that pulse; randomize how many show.
+    const waves = 1 + randInt(3);
+    for (let k = 0; k < waves; k++) {
+      const x = 6 + k * 2;
+      const h = 4 - k;
+      g.appendChild(px(x, 6 - h / 2, k === 0 ? R.accent : R.accent2, {
+        w: 1, h: Math.max(1, h), cls: 'pxi-blink' + (k % 2 ? '2' : '')
+      }));
+    }
+  }
+
+  function drawSuggestionbox(g, R) {
+    // A small box with a lid lifted at an angle and a slip peeking out.
+    g.appendChild(px(2, 6, R.ink, { w: 8, h: 5, rx: 0.5 }));   // box body
+    g.appendChild(px(3, 7, R.panel, { w: 6, h: 3 }));          // box inner
+    g.appendChild(px(4, 3, R.accent2, { w: 4, h: 3, cls: 'pxi-bob' })); // slip
+    g.appendChild(px(2, 5, R.accent, { w: 9, h: 1, rx: 0.5 })); // lid (tilted feel)
+    if (chance(0.6)) g.appendChild(px(9, 2, R.accent2, { cls: 'pxi-twinkle' }));
+  }
+
+  function drawQuote(g, R) {
+    // A speech bubble with two big quotation marks.
+    g.appendChild(px(1, 2, R.ink, { w: 10, h: 7, rx: 1.5 }));  // bubble
+    g.appendChild(px(3, 9, R.ink, { w: 2, h: 2 }));            // tail
+    g.appendChild(px(2, 3, R.panel, { w: 8, h: 5, rx: 1 }));   // inner
+    g.appendChild(px(3, 4, R.accent, { w: 1, h: 2 }));         // left quote
+    g.appendChild(px(4, 4, R.accent, { w: 1, h: 2 }));
+    g.appendChild(px(7, 4, R.accent2, { w: 1, h: 2, cls: 'pxi-blink' })); // right quote
+    g.appendChild(px(8, 4, R.accent2, { w: 1, h: 2 }));
+  }
+
+  function drawSpinner(g, R) {
+    // A wheel quartered into colored wedges with a pointer at the top.
+    g.appendChild(px(2, 2, R.ink, { w: 8, h: 8, rx: 4, opacity: 0.4 })); // rim
+    g.appendChild(px(3, 3, R.accent, { w: 3, h: 3 }));
+    g.appendChild(px(6, 3, R.accent2, { w: 3, h: 3 }));
+    g.appendChild(px(3, 6, R.accent2, { w: 3, h: 3 }));
+    g.appendChild(px(6, 6, R.accent, { w: 3, h: 3 }));
+    g.appendChild(px(5, 5, R.ink, { w: 2, h: 2, rx: 1 }));   // hub
+    g.appendChild(px(5, 0, R.ink, { w: 2, h: 2 }));          // pointer
+    g.setAttribute('class', 'pxi-spin'); // slow rotate ambient
+  }
+
+  function drawNotepad(g, R) {
+    // A sheet with ruled lines + a pencil corner; one line glitch-blinks.
+    g.appendChild(px(2, 1, R.ink, { w: 8, h: 10, rx: 0.5 }));  // page
+    g.appendChild(px(3, 1, R.accent, { w: 1, h: 10, opacity: 0.5 })); // margin
+    const lines = [3, 5, 7, 9];
+    for (let i = 0; i < lines.length; i++) {
+      const glitch = chance(0.3);
+      g.appendChild(px(4, lines[i], glitch ? R.accent2 : R.ink2, {
+        w: glitch ? 3 + randInt(3) : 5, h: 1, cls: glitch ? 'pxi-blink2' : undefined
+      }));
+    }
+    g.appendChild(px(8, 8, R.accent2, { w: 2, h: 3 })); // pencil
+    g.appendChild(px(8, 11, R.accent, { w: 2, h: 1 }));  // tip
+  }
+
+  function drawPaint(g, R) {
+    // A paint palette blob with dabs of color + a brush.
+    g.appendChild(px(2, 4, R.ink, { w: 7, h: 6, rx: 3, opacity: 0.85 })); // palette
+    const dabs = [[3, 5], [5, 5], [4, 7], [6, 6]];
+    const cols = [R.accent, R.accent2, R.ink2];
+    for (let i = 0; i < dabs.length; i++) {
+      if (chance(0.8)) g.appendChild(px(dabs[i][0], dabs[i][1], cols[randInt(cols.length)], { cls: chance(0.4) ? 'pxi-blink' : undefined }));
+    }
+    g.appendChild(px(8, 1, R.ink, { w: 1, h: 5 }));    // brush handle
+    g.appendChild(px(8, 6, R.accent, { w: 1, h: 2 }));  // bristles
+  }
+
   const BUILDERS = {
     calculator: drawCalculator,
     clock: drawClock,
@@ -245,7 +320,13 @@
     randomizer: drawRandomizer,
     shuffle: drawShuffle,
     dice: drawDice,
-    coin: drawCoin
+    coin: drawCoin,
+    soundboard: drawSoundboard,
+    suggestionbox: drawSuggestionbox,
+    quote: drawQuote,
+    spinner: drawSpinner,
+    notepad: drawNotepad,
+    paint: drawPaint,
   };
 
   // Per-icon ambient motion class on the wrapper (gentle bob / sway).
@@ -256,7 +337,13 @@
     randomizer: 'pxi-sway',
     shuffle: '',        // arrows nudge via inner <g>
     dice: 'pxi-bob',
-    coin: ''            // coin flips via inner <g>
+    coin: '',           // coin flips via inner <g>
+    soundboard: 'pxi-bob',
+    suggestionbox: '',  // the slip animates itself
+    quote: 'pxi-sway',
+    spinner: '',        // rotates via inner <g> class
+    notepad: 'pxi-bob',
+    paint: 'pxi-sway',
   };
 
   // makePixelIcon(name, opts) -> SVG element (an animated pixel-art icon).

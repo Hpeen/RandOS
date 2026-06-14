@@ -9,7 +9,13 @@ const APPS = [
   { name: 'calculator', title: 'Calculator', size: { w: 340, h: 480 }, factory: () => makeCalculator() },
   { name: 'clock',      title: 'Clock',      size: { w: 380, h: 380 }, factory: () => makeClock() },
   { name: 'calendar',   title: 'Calendar',   size: { w: 360, h: 420 }, factory: () => makeCalendar() },
-  { name: 'randomizer', title: 'Randomizer', size: { w: 380, h: 440 }, factory: () => makeRandomizer() }
+  { name: 'randomizer', title: 'Randomizer', size: { w: 380, h: 440 }, factory: () => makeRandomizer() },
+  { name: 'soundboard', title: 'Sound Board', size: { w: 440, h: 440 }, factory: () => makeSoundboard() },
+  { name: 'suggestionbox', title: 'Suggestion Box', size: { w: 360, h: 420 }, factory: () => makeSuggestionBox() },
+  { name: 'quote', title: 'Quote of the Session', size: { w: 440, h: 300 }, factory: () => makeQuote() },
+  { name: 'spinner', title: 'Spinner', size: { w: 460, h: 520 }, factory: () => makeSpinner() },
+  { name: 'notepad', title: 'Notepad', size: { w: 420, h: 460 }, factory: () => makeNotepad() },
+  { name: 'paint', title: 'Paint', size: { w: 460, h: 420 }, factory: () => makePaint() },
 ];
 
 function rollWallpaper() {
@@ -65,6 +71,8 @@ function launch(app) {
 // state sprites change AND re-tint to the fresh accent. Without the cursor
 // reroll the mouse sprite would keep its old shape/colour on every shuffle.
 function shuffleTheme() {
+  // 10% of shuffles drop into the Backrooms instead of a normal reroll.
+  if (window.Backrooms && window.Backrooms.rollOnShuffle()) return;
   rollWallpaper();
   if (typeof window.rollCursor === 'function') window.rollCursor();
 }

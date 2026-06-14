@@ -132,6 +132,10 @@
   // break the OS. Order: theme+wallpaper, cursor, then per-window re-skin + move,
   // then the particle celebration.
   function runChaos() {
+    // 10% chance the chaos drops the OS into the Backrooms (entered first so the
+    // reroll below paints under the yellow theme).
+    try { if (window.Backrooms) window.Backrooms.rollOnShuffle(); } catch (e) {}
+
     // 1) Reroll the desktop theme + animated wallpaper (also resets --rand-accent
     //    and --wall-bg). Same function the "Shuffle theme" button calls.
     try {
@@ -204,12 +208,21 @@
   // the chaos has run so the scheduler can re-arm.
   function runSequence(onDone) {
     if (running) { if (onDone) onDone(); return; }
+    // Respect the shared lock: if a QTE (or anything) holds it, skip this cycle.
+    if (typeof window !== 'undefined' && window.RandOSBusy &&
+        !window.RandOSBusy.acquire('chaos')) {
+      if (onDone) onDone();
+      return;
+    }
     running = true;
     showHeadsup(function () {
       removeBanner();          // banner goes away exactly as the chaos lands
       try { runChaos(); }
       finally {
         running = false;
+        if (typeof window !== 'undefined' && window.RandOSBusy) {
+          window.RandOSBusy.release('chaos');
+        }
         if (onDone) onDone();
       }
     });
