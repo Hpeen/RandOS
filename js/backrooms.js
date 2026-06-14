@@ -16,6 +16,7 @@
   var active = false;
   var audioCtx = null, humNodes = null;
   var escHandler = null, promptEl = null;
+  var escTimer = null;
 
   function reduced() {
     return typeof window !== 'undefined' && window.FX &&
@@ -64,7 +65,9 @@
 
     // Defer binding the escape click so the triggering shuffle-click doesn't
     // instantly dismiss it.
-    setTimeout(function () {
+    escTimer = setTimeout(function () {
+      escTimer = null;
+      if (!active) return; // exit() was called during the 350ms window
       escHandler = function () { exit(); };
       document.addEventListener('click', escHandler, { once: true });
     }, 350);
@@ -73,6 +76,7 @@
   function exit() {
     if (!active) return;
     active = false;
+    if (escTimer !== null) { clearTimeout(escTimer); escTimer = null; }
     document.body.classList.remove('backrooms', 'backrooms-calm');
     if (promptEl && promptEl.parentNode) promptEl.parentNode.removeChild(promptEl);
     promptEl = null;

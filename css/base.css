@@ -1444,7 +1444,7 @@ body.backrooms .window { filter: sepia(.5) saturate(1.6) hue-rotate(-10deg); }
   text-shadow: 0 0 8px rgba(0,0,0,.6); animation: backrooms-pulse 2s ease-in-out infinite; }
 @keyframes backrooms-flicker { 0%,100% { opacity: 1; } 47% { opacity: .96; } 48% { opacity: .8; } 49% { opacity: 1; } 92% { opacity: .9; } }
 @keyframes backrooms-pulse { 0%,100% { opacity: .55; } 50% { opacity: .9; } }
-body.backrooms-calm::before { animation: none; }
+body.backrooms.backrooms-calm::before { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   body.backrooms::before { animation: none; }
   .backrooms-prompt { animation: none; }
