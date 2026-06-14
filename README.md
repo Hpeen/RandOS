@@ -1,7 +1,7 @@
 # RandOS
 
 A web desktop where nothing looks the same twice. Every app re-rolls its design
-from curated pools each time you open it — palettes, fonts, layouts, and
+from curated pools each time you open it. Palettes, fonts, layouts, and
 hand-built animated pixel-art icons that vary on every render. It may be
 colorful, occasionally monochrome, but it's always readable (contrast is
 guaranteed, not hoped for).
