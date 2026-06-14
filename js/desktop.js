@@ -71,6 +71,8 @@ function launch(app) {
 // state sprites change AND re-tint to the fresh accent. Without the cursor
 // reroll the mouse sprite would keep its old shape/colour on every shuffle.
 function shuffleTheme() {
+  // 10% of shuffles drop into the Backrooms instead of a normal reroll.
+  if (window.Backrooms && window.Backrooms.rollOnShuffle()) return;
   rollWallpaper();
   if (typeof window.rollCursor === 'function') window.rollCursor();
 }

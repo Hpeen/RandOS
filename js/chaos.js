@@ -132,6 +132,10 @@
   // break the OS. Order: theme+wallpaper, cursor, then per-window re-skin + move,
   // then the particle celebration.
   function runChaos() {
+    // 10% chance the chaos drops the OS into the Backrooms (entered first so the
+    // reroll below paints under the yellow theme).
+    try { if (window.Backrooms) window.Backrooms.rollOnShuffle(); } catch (e) {}
+
     // 1) Reroll the desktop theme + animated wallpaper (also resets --rand-accent
     //    and --wall-bg). Same function the "Shuffle theme" button calls.
     try {
