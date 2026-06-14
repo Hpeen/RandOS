@@ -381,4 +381,19 @@ if (typeof window !== 'undefined') {
   window.getOpenEffect = function getOpenEffect() {
     return lockedEffect || 'random';
   };
+
+  // Force-close every open window (used by the QTE failure penalty). Animates
+  // each out when motion is allowed, else tears down instantly. Iterates over a
+  // COPY because teardown mutates openWindows.
+  window.forceCloseAllWindows = function forceCloseAllWindows() {
+    var snapshot = openWindows.slice();
+    for (var i = 0; i < snapshot.length; i++) {
+      var rec = snapshot[i];
+      if (!rec || !rec.el) continue;
+      var closeBtn = rec.el.querySelector('.window-close');
+      if (closeBtn) {
+        closeBtn.click(); // reuse the existing close path (animation + teardown)
+      }
+    }
+  };
 }
