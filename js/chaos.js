@@ -204,12 +204,21 @@
   // the chaos has run so the scheduler can re-arm.
   function runSequence(onDone) {
     if (running) { if (onDone) onDone(); return; }
+    // Respect the shared lock: if a QTE (or anything) holds it, skip this cycle.
+    if (typeof window !== 'undefined' && window.RandOSBusy &&
+        !window.RandOSBusy.acquire('chaos')) {
+      if (onDone) onDone();
+      return;
+    }
     running = true;
     showHeadsup(function () {
       removeBanner();          // banner goes away exactly as the chaos lands
       try { runChaos(); }
       finally {
         running = false;
+        if (typeof window !== 'undefined' && window.RandOSBusy) {
+          window.RandOSBusy.release('chaos');
+        }
         if (onDone) onDone();
       }
     });
