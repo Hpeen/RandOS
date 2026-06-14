@@ -1,24 +1,11 @@
-# Devlog #4 — Tuning the Backrooms & turning up the heat
+# randos devlog #4: the backrooms got real
 
-A smaller round, all about feel. The big systems from last time are in; this
-pass dials them in.
+quick one this time, all about feel. the big stuff from last round (the quick-time events and the backrooms easter egg) is all in and working, so this pass was just me poking at it until it felt right.
 
-**The Backrooms, now with a real room:** the fluorescent-yellow CSS gradient has
-been swapped for an actual backrooms photo (`assets/backrooms.png`) stretched to
-cover the whole screen. The flicker was reworked too — instead of dipping the
-layer's opacity (which briefly showed the desktop behind it), it now flickers
-brightness, so the room stays solid and just stutters like a failing fluorescent
-tube. The "you shouldn't be here" prompt got bigger and harder to miss, and the
-low Web Audio hum stays as the quiet, unsettling drone underneath.
+the backrooms was the main thing. it used to be a flat fluorescent-yellow css gradient i hacked together, which read more "someone forgot to set a background" than "liminal nightmare." so i dropped in an actual backrooms photo and stretched it over the whole screen. way creepier instantly. the flicker needed fixing too. it was dimming the whole layer's opacity, which meant every flicker briefly showed your normal desktop peeking through behind it, totally killing the vibe. now it flickers *brightness* instead, so the room stays solid and just stutters like a fluorescent tube that's about to die. the "you shouldn't be here" text was also way too small to notice, so i bumped it up. the low hum stays exactly as is, quiet and gross.
 
-**No quick escape:** you used to be able to click out of the Backrooms almost
-immediately. Now the escape click is armed only after five seconds — long enough
-to actually feel trapped before the way out appears.
+oh, and you can't just bail anymore. before, you could click out of the backrooms basically the instant you landed in it, which kind of defeated the point. now the escape click doesn't even work for the first five seconds. you just have to sit in it for a bit. enjoy.
 
-**Quick-Time Events, more often:** the mini-games now ambush you every 30–60
-seconds instead of every 90–150. Same rules — they only fire when a window is
-open, the tab is visible, and the chaos event isn't already running — just more
-of them.
+last thing: the quick-time events were too rare. every 90 to 150 seconds meant you could go a whole session and barely see one. cut it down to every 30 to 60 instead, so they actually ambush you now. same rules as before, they only fire when you've got a window open and the chaos event isn't already going, so it never piles on.
 
-Still vanilla JS, no build step, and everything respects `prefers-reduced-motion`
-(the Backrooms flicker holds steady when motion is reduced).
+still vanilla js, no build step, still respects reduced-motion (the flicker just holds still if you've got that on). next up is probably finding more dumb ways to mess with you.
